@@ -1,0 +1,451 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Выбор столов - Админ-панель{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="display-6 fw-bold text-primary mb-2">
+                        <i class="fas fa-map me-2"></i>
+                        Выбор столов - Админ
+                    </h1>
+                    <p class="text-muted mb-0">Создание бронирования от имени администратора</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'admin_panel' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-2"></i>
+                        Назад к админке
+                    </a>
+                </div>
+            </div>
+
+            <!-- Admin Reservation Form -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-user-cog me-2"></i>
+                        Создание бронирования
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="admin-reservation-form">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="user_phone" class="form-label fw-bold">
+                                        <i class="fas fa-phone me-2"></i>
+                                        Телефон клиента
+                                    </label>
+                                    <input type="tel" class="form-control" id="user_phone" name="user_phone" 
+                                           placeholder="+7 (999) 999-99-99">
+                                    <div class="form-text">Оставьте пустым для бронирования от вашего имени</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="guest_count" class="form-label fw-bold">
+                                        <i class="fas fa-users me-2"></i>
+                                        Количество гостей
+                                    </label>
+                                    <input type="number" class="form-control" id="guest_count" name="guest_count" 
+                                           min="1" max="20" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="date" class="form-label fw-bold">
+                                        <i class="fas fa-calendar me-2"></i>
+                                        Дата
+                                    </label>
+                                    <input type="date" class="form-control" id="date" name="date" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="time" class="form-label fw-bold">
+                                        <i class="fas fa-clock me-2"></i>
+                                        Время
+                                    </label>
+                                    <input type="time" class="form-control" id="time" name="time" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_birthday" name="is_birthday">
+                                <label class="form-check-label fw-bold" for="is_birthday">
+                                    <i class="fas fa-birthday-cake me-2"></i>
+                                    День рождения
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3" id="birthday-name" style="display: none;">
+                            <label for="birthday_person_name" class="form-label fw-bold">
+                                <i class="fas fa-user me-2"></i>
+                                Имя именинника
+                            </label>
+                            <input type="text" class="form-control" id="birthday_person_name" name="birthday_person_name" 
+                                   placeholder="Введите имя именинника">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="special_requests" class="form-label fw-bold">
+                                <i class="fas fa-comment me-2"></i>
+                                Особые пожелания
+                            </label>
+                            <textarea class="form-control" id="special_requests" name="special_requests" 
+                                      rows="3" placeholder="Дополнительные пожелания к бронированию"></textarea>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Floor Plan -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-map me-2"></i>
+                        Карта ресторана
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Floor Plan -->
+                    <div class="floor-plan-container mb-4">
+                        <div class="floor-plan" id="floor-plan">
+                            <!-- Tables will be rendered here by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Selected Table Info -->
+                    <div id="selected-table-info" class="alert alert-info" style="display: none;">
+                        <h6 class="fw-bold mb-2">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Выбранный стол
+                        </h6>
+                        <div id="table-details"></div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="button" class="btn btn-success btn-lg" id="create-reservation-btn" disabled>
+                            <i class="fas fa-check me-2"></i>
+                            Создать бронирование
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ tables|json_script:"tables-data" }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const floorPlan = document.getElementById('floor-plan');
+    const selectedTableInfo = document.getElementById('selected-table-info');
+    const tableDetails = document.getElementById('table-details');
+    const createBtn = document.getElementById('create-reservation-btn');
+    const form = document.getElementById('admin-reservation-form');
+    const isBirthdayCheckbox = document.getElementById('is_birthday');
+    const birthdayNameDiv = document.getElementById('birthday-name');
+    
+    let selectedTable = null;
+    let selectedSeats = [];
+    let guestCount = 0;
+    
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date').setAttribute('min', today);
+    
+    // Birthday checkbox handler
+    isBirthdayCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            birthdayNameDiv.style.display = 'block';
+            document.getElementById('birthday_person_name').required = true;
+        } else {
+            birthdayNameDiv.style.display = 'none';
+            document.getElementById('birthday_person_name').required = false;
+        }
+    });
+    
+    // Guest count change
+    document.getElementById('guest_count').addEventListener('change', function() {
+        guestCount = parseInt(this.value) || 0;
+        updateCreateButton();
+    });
+    
+    // Render floor plan
+    function renderFloorPlan() {
+        const tables = JSON.parse(document.getElementById('tables-data').textContent);
+        
+        floorPlan.innerHTML = '';
+        
+        tables.forEach(table => {
+            const tableElement = document.createElement('div');
+            tableElement.className = `table-item available`;
+            tableElement.dataset.tableId = table.id;
+            tableElement.innerHTML = `
+                <div class="table-number">${table.number}</div>
+                <div class="table-info">
+                    <small>${table.available_seats}/${table.max_seats} мест</small>
+                </div>
+            `;
+            
+            tableElement.addEventListener('click', () => selectTable(table.id));
+            floorPlan.appendChild(tableElement);
+        });
+    }
+    
+    // Select table
+    function selectTable(tableId) {
+        selectedTable = tableId;
+        
+        // Update UI
+        document.querySelectorAll('.table-item').forEach(item => {
+            item.classList.remove('selected');
+        });
+        document.querySelector(`[data-table-id="${tableId}"]`).classList.add('selected');
+        
+        // Load seats for this table
+        loadTableSeats(tableId);
+    }
+    
+    // Load table seats
+    function loadTableSeats(tableId) {
+        fetch(`/api/table/${tableId}/seats/`)
+            .then(response => response.json())
+            .then(data => {
+                displayTableSeats(data);
+            })
+            .catch(error => {
+                console.error('Error loading seats:', error);
+            });
+    }
+    
+    // Display table seats
+    function displayTableSeats(data) {
+        selectedTableInfo.style.display = 'block';
+        tableDetails.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-1"><strong>Стол:</strong> ${data.table_number}</p>
+                    <p class="mb-1"><strong>Максимум мест:</strong> ${data.max_seats}</p>
+                </div>
+                <div class="col-md-6">
+                    <p class="mb-1"><strong>Нужно мест:</strong> ${guestCount}</p>
+                    <p class="mb-1"><strong>Выберите места:</strong></p>
+                </div>
+            </div>
+            <div class="seats-container mt-3">
+                ${data.seats.map(seat => `
+                    <button type="button" 
+                            class="btn btn-sm seat-btn ${seat.is_available ? 'btn-outline-primary' : 'btn-secondary disabled'}" 
+                            data-seat-id="${seat.id}"
+                            ${!seat.is_available ? 'disabled' : ''}>
+                        Место ${seat.seat_number}
+                    </button>
+                `).join('')}
+            </div>
+        `;
+        
+        // Add seat selection handlers
+        document.querySelectorAll('.seat-btn:not(:disabled)').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const seatId = this.dataset.seatId;
+                toggleSeatSelection(seatId, this);
+            });
+        });
+    }
+    
+    // Toggle seat selection
+    function toggleSeatSelection(seatId, button) {
+        const index = selectedSeats.indexOf(seatId);
+        
+        if (index > -1) {
+            // Deselect seat
+            selectedSeats.splice(index, 1);
+            button.classList.remove('btn-primary');
+            button.classList.add('btn-outline-primary');
+        } else {
+            // Select seat
+            if (selectedSeats.length < guestCount) {
+                selectedSeats.push(seatId);
+                button.classList.remove('btn-outline-primary');
+                button.classList.add('btn-primary');
+            } else {
+                alert(`Можно выбрать максимум ${guestCount} мест`);
+                return;
+            }
+        }
+        
+        updateCreateButton();
+    }
+    
+    // Update create button state
+    function updateCreateButton() {
+        const hasTable = selectedTable !== null;
+        const hasEnoughSeats = selectedSeats.length === guestCount;
+        const hasDate = document.getElementById('date').value;
+        const hasTime = document.getElementById('time').value;
+        
+        createBtn.disabled = !(hasTable && hasEnoughSeats && hasDate && hasTime && guestCount > 0);
+    }
+    
+    // Form validation
+    document.getElementById('date').addEventListener('change', updateCreateButton);
+    document.getElementById('time').addEventListener('change', updateCreateButton);
+    
+    // Create reservation
+    createBtn.addEventListener('click', function() {
+        if (!selectedTable || selectedSeats.length !== guestCount) {
+            alert('Пожалуйста, выберите стол и места');
+            return;
+        }
+        
+        createBtn.disabled = true;
+        createBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Создание...';
+        
+        const formData = new FormData(form);
+        formData.append('table_id', selectedTable);
+        formData.append('seat_ids', selectedSeats.join(','));
+        
+        fetch('/api/admin/create-reservation/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                window.location.href = '{% url "admin_panel" %}';
+            } else {
+                alert('Ошибка: ' + data.error);
+                createBtn.disabled = false;
+                createBtn.innerHTML = '<i class="fas fa-check me-2"></i>Создать бронирование';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Произошла ошибка при создании бронирования');
+            createBtn.disabled = false;
+            createBtn.innerHTML = '<i class="fas fa-check me-2"></i>Создать бронирование';
+        });
+    });
+    
+    // Initialize
+    renderFloorPlan();
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .floor-plan-container {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        min-height: 400px;
+    }
+    
+    .floor-plan {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 15px;
+        position: relative;
+    }
+    
+    .table-item {
+        background: #fff;
+        border: 2px solid #dee2e6;
+        border-radius: 10px;
+        padding: 15px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .table-item.available {
+        border-color: #28a745;
+        background: #d4edda;
+    }
+    
+    .table-item.available:hover {
+        border-color: #1e7e34;
+        background: #c3e6cb;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .table-item.selected {
+        border-color: #007bff;
+        background: #cce7ff;
+        box-shadow: 0 0 0 3px rgba(0,123,255,0.25);
+    }
+    
+    .table-number {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #333;
+    }
+    
+    .table-info {
+        font-size: 0.8rem;
+        color: #666;
+        margin-top: 5px;
+    }
+    
+    .seats-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    
+    .seat-btn {
+        margin: 2px;
+        min-width: 80px;
+    }
+    
+    .card {
+        border: none;
+        border-radius: 15px;
+    }
+    
+    .card-header {
+        border-radius: 15px 15px 0 0 !important;
+    }
+    
+    .btn-lg {
+        padding: 12px 30px;
+        font-size: 1.1rem;
+        border-radius: 10px;
+    }
+    
+    .form-control {
+        border-radius: 8px;
+    }
+    
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+</style>
+{% endblock %}
+

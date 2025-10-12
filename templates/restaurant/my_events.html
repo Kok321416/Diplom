@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Мои мероприятия - SkyBAR{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold">
+                    <i class="fas fa-calendar-alt me-2"></i>
+                    Мои мероприятия
+                </h2>
+                <a href="{% url 'create_event' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>
+                    Создать мероприятие
+                </a>
+            </div>
+
+            {% if events %}
+                <div class="row">
+                    {% for event in events %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card shadow-sm h-100 event-card">
+                            <div class="card-header 
+                                {% if event.status == 'confirmed' %}bg-success{% elif event.status == 'pending' %}bg-warning{% elif event.status == 'cancelled' %}bg-danger{% else %}bg-secondary{% endif %} 
+                                text-white">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="card-title mb-0">
+                                        <i class="fas fa-calendar-check me-2"></i>
+                                        Мероприятие
+                                    </h6>
+                                    <span class="badge bg-light text-dark">
+                                        {% if event.status == 'pending' %}Ожидает
+                                        {% elif event.status == 'confirmed' %}Подтверждено
+                                        {% elif event.status == 'cancelled' %}Отменено
+                                        {% else %}Завершено{% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="event-info">
+                                        <i class="fas fa-calendar text-primary me-2"></i>
+                                        <strong>Дата:</strong> {{ event.date|date:"d.m.Y" }}
+                                    </div>
+                                    <div class="event-info">
+                                        <i class="fas fa-clock text-primary me-2"></i>
+                                        <strong>Время:</strong> {{ event.time|time:"H:i" }}
+                                    </div>
+                                    <div class="event-info">
+                                        <i class="fas fa-users text-primary me-2"></i>
+                                        <strong>Участников:</strong> {{ event.participants_count }}
+                                    </div>
+                                </div>
+
+                                {% if event.alcohol or event.host or event.decoration or event.music or event.photographer or event.catering or event.sound_equipment %}
+                                <hr>
+                                <div class="mb-2">
+                                    <strong class="d-block mb-2">Выбранные услуги:</strong>
+                                    <div class="services-list">
+                                        {% if event.alcohol %}
+                                        <span class="badge bg-danger me-1 mb-1">
+                                            <i class="fas fa-wine-glass me-1"></i>Алкоголь
+                                        </span>
+                                        {% endif %}
+                                        {% if event.host %}
+                                        <span class="badge bg-primary me-1 mb-1">
+                                            <i class="fas fa-microphone me-1"></i>Ведущий
+                                        </span>
+                                        {% endif %}
+                                        {% if event.decoration %}
+                                        <span class="badge bg-success me-1 mb-1">
+                                            <i class="fas fa-palette me-1"></i>Декорации
+                                        </span>
+                                        {% endif %}
+                                        {% if event.music %}
+                                        <span class="badge bg-info me-1 mb-1">
+                                            <i class="fas fa-music me-1"></i>Музыка
+                                        </span>
+                                        {% endif %}
+                                        {% if event.photographer %}
+                                        <span class="badge bg-warning me-1 mb-1">
+                                            <i class="fas fa-camera me-1"></i>Фотограф
+                                        </span>
+                                        {% endif %}
+                                        {% if event.catering %}
+                                        <span class="badge bg-dark me-1 mb-1">
+                                            <i class="fas fa-utensils me-1"></i>Кейтеринг
+                                        </span>
+                                        {% endif %}
+                                        {% if event.sound_equipment %}
+                                        <span class="badge bg-secondary me-1 mb-1">
+                                            <i class="fas fa-volume-up me-1"></i>Звуковое оборудование
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                {% if event.special_requests %}
+                                <hr>
+                                <div class="mb-0">
+                                    <strong class="d-block mb-1">Пожелания:</strong>
+                                    <p class="text-muted small mb-0">{{ event.special_requests|truncatewords:20 }}</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="card-footer bg-light text-muted small">
+                                <i class="fas fa-clock me-1"></i>
+                                Создано: {{ event.created_at|date:"d.m.Y H:i" }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="card shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-calendar-times text-muted mb-3" style="font-size: 4rem;"></i>
+                        <h4 class="text-muted mb-3">У вас пока нет мероприятий</h4>
+                        <p class="text-muted mb-4">
+                            Создайте мероприятие, и мы поможем организовать его идеально!
+                        </p>
+                        <a href="{% url 'create_event' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-plus me-2"></i>
+                            Создать первое мероприятие
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="mt-4">
+                <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    На главную
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border: none;
+        border-radius: 15px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .event-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+    }
+    
+    .card-header {
+        border-radius: 15px 15px 0 0 !important;
+    }
+    
+    .card-footer {
+        border-radius: 0 0 15px 15px !important;
+    }
+    
+    .event-info {
+        padding: 8px 0;
+        border-bottom: 1px dashed #e9ecef;
+    }
+    
+    .event-info:last-child {
+        border-bottom: none;
+    }
+    
+    .services-list {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .badge {
+        font-size: 0.75rem;
+        padding: 5px 10px;
+    }
+    
+    .btn-lg {
+        padding: 12px 30px;
+        font-size: 1.1rem;
+        border-radius: 10px;
+    }
+</style>
+{% endblock %}
+

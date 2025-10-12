@@ -1,0 +1,389 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Быстрое бронирование - SkyBAR{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="booking-hero position-relative text-white py-5" style="
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.95) 0%, rgba(111, 66, 193, 0.95) 100%),
+                url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920&q=80') center/cover;
+    min-height: 40vh;
+    display: flex;
+    align-items: center;
+">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-3" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.3);">
+            <i class="fas fa-calendar-check me-3"></i>
+            Быстрое бронирование
+        </h1>
+        <p class="lead fs-4" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.3);">
+            Забронируйте стол в SkyBAR за 4 простых шага
+        </p>
+    </div>
+</section>
+
+<!-- Steps Section -->
+<section class="py-4 bg-light">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 mb-3">
+                <div class="step-card active" data-step="1">
+                    <div class="step-number">1</div>
+                    <h6 class="fw-bold mt-2">Выбор параметров</h6>
+                    <p class="small text-muted mb-0">Дата, время, гости</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="step-card" data-step="2">
+                    <div class="step-number">2</div>
+                    <h6 class="fw-bold mt-2">Выбор столика</h6>
+                    <p class="small text-muted mb-0">На карте или из списка</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="step-card" data-step="3">
+                    <div class="step-number">3</div>
+                    <h6 class="fw-bold mt-2">Подтверждение</h6>
+                    <p class="small text-muted mb-0">Проверка деталей</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="step-card" data-step="4">
+                    <div class="step-number">4</div>
+                    <h6 class="fw-bold mt-2">Оплата</h6>
+                    <p class="small text-muted mb-0">На месте в ресторане</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Booking Form Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-lg border-0">
+                    <div class="card-body p-5">
+                        <form method="post" id="quick-booking-form">
+                            {% csrf_token %}
+                            
+                            <!-- Date Selection -->
+                            <div class="mb-4">
+                                <label for="date" class="form-label fw-bold fs-5">
+                                    <i class="fas fa-calendar text-primary me-2"></i>
+                                    Выберите дату
+                                </label>
+                                <input type="date" class="form-control form-control-lg" id="date" name="date" required>
+                            </div>
+
+                            <!-- Time Selection -->
+                            <div class="mb-4">
+                                <label for="time" class="form-label fw-bold fs-5">
+                                    <i class="fas fa-clock text-primary me-2"></i>
+                                    Выберите время
+                                </label>
+                                <select class="form-select form-select-lg" id="time" name="time" required>
+                                    <option value="">Выберите время</option>
+                                    <option value="12:00">12:00</option>
+                                    <option value="13:00">13:00</option>
+                                    <option value="14:00">14:00</option>
+                                    <option value="15:00">15:00</option>
+                                    <option value="16:00">16:00</option>
+                                    <option value="17:00">17:00</option>
+                                    <option value="18:00">18:00</option>
+                                    <option value="19:00">19:00</option>
+                                    <option value="20:00">20:00</option>
+                                    <option value="21:00">21:00</option>
+                                    <option value="22:00">22:00</option>
+                                    <option value="23:00">23:00</option>
+                                </select>
+                            </div>
+
+                            <!-- Guest Count -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold fs-5">
+                                    <i class="fas fa-users text-primary me-2"></i>
+                                    Количество гостей
+                                </label>
+                                <div class="guest-selector d-flex flex-wrap gap-2">
+                                    {% for i in "12345678910"|make_list %}
+                                    <button type="button" class="btn btn-outline-primary guest-btn" data-guests="{{ forloop.counter }}">
+                                        {{ forloop.counter }}
+                                    </button>
+                                    {% endfor %}
+                                </div>
+                                <input type="hidden" id="guest_count" name="guest_count" required>
+                            </div>
+
+                            <!-- Zone Selection -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold fs-5">
+                                    <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                    Зона ресторана
+                                </label>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="zone-option" data-zone="regular">
+                                            <i class="fas fa-chair fs-1 mb-2"></i>
+                                            <h6>Обычная зона</h6>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="zone-option" data-zone="vip">
+                                            <i class="fas fa-crown fs-1 mb-2"></i>
+                                            <h6>VIP зона</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="zone" name="zone" value="regular">
+                            </div>
+
+                            <!-- Smoking Preference -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold fs-5">
+                                    <i class="fas fa-smoking text-primary me-2"></i>
+                                    Предпочтения
+                                </label>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="smoking-option" data-smoking="false">
+                                            <i class="fas fa-ban fs-1 mb-2"></i>
+                                            <h6>Не курящая</h6>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="smoking-option" data-smoking="true">
+                                            <i class="fas fa-smoking fs-1 mb-2"></i>
+                                            <h6>Курящая</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="smoking_preference" name="smoking_preference" value="false">
+                            </div>
+
+                            <!-- Terms -->
+                            <div class="mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="terms" required>
+                                    <label class="form-check-label" for="terms">
+                                        Я согласен с <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">условиями бронирования</a>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg py-3" id="find-tables-btn">
+                                    <i class="fas fa-search me-2"></i>
+                                    Найти столы
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Info Section -->
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Время работы:</strong><br>
+                            Вс-Чт: 12:00-02:00<br>
+                            Пт-Сб: 12:00-03:00
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="alert alert-success">
+                            <i class="fas fa-phone me-2"></i>
+                            <strong>Контакты:</strong><br>
+                            +7 (950) 068-95-64
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Terms Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Условия бронирования</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Правила бронирования столов в SkyBAR:</h6>
+                <ol>
+                    <li>Бронирование действует в течение 10 минут после выбора стола</li>
+                    <li>Необходимо подтвердить бронь и прийти вовремя</li>
+                    <li>При опоздании более 15 минут бронь может быть отменена</li>
+                    <li>Минимальный заказ - 500 рублей на человека</li>
+                    <li>Оплата производится на месте</li>
+                    <li>Отмена брони возможна за 2 часа до визита</li>
+                </ol>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Понятно</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .step-card {
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        transition: all 0.3s ease;
+        border: 2px solid #e0e0e0;
+    }
+    
+    .step-card.active {
+        border-color: #0d6efd;
+        background: linear-gradient(135deg, #e7f3ff 0%, #ffffff 100%);
+        box-shadow: 0 4px 15px rgba(13, 110, 253, 0.2);
+    }
+    
+    .step-number {
+        width: 50px;
+        height: 50px;
+        background: #0d6efd;
+        color: white;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    
+    .step-card:not(.active) .step-number {
+        background: #6c757d;
+    }
+    
+    .guest-btn {
+        width: 60px;
+        height: 60px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        border-radius: 10px;
+    }
+    
+    .guest-btn.active {
+        background: #0d6efd;
+        color: white;
+        border-color: #0d6efd;
+    }
+    
+    .zone-option, .smoking-option {
+        border: 2px solid #dee2e6;
+        border-radius: 15px;
+        padding: 30px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+    }
+    
+    .zone-option:hover, .smoking-option:hover {
+        border-color: #0d6efd;
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .zone-option.selected, .smoking-option.selected {
+        border-color: #0d6efd;
+        background: linear-gradient(135deg, #e7f3ff 0%, #ffffff 100%);
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+    }
+    
+    .form-control, .form-select {
+        border-radius: 10px;
+        padding: 12px 20px;
+    }
+    
+    .card {
+        border-radius: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('quick-booking-form');
+    const dateInput = document.getElementById('date');
+    const guestBtns = document.querySelectorAll('.guest-btn');
+    const guestCountInput = document.getElementById('guest_count');
+    const zoneOptions = document.querySelectorAll('.zone-option');
+    const zoneInput = document.getElementById('zone');
+    const smokingOptions = document.querySelectorAll('.smoking-option');
+    const smokingInput = document.getElementById('smoking_preference');
+    
+    // Set min date to today
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.min = today;
+    dateInput.value = today;
+    
+    // Guest count selection
+    guestBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            guestBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            guestCountInput.value = this.dataset.guests;
+        });
+    });
+    
+    // Zone selection
+    zoneOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            zoneOptions.forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+            zoneInput.value = this.dataset.zone;
+        });
+    });
+    
+    // Smoking preference
+    smokingOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            smokingOptions.forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+            smokingInput.value = this.dataset.smoking;
+        });
+    });
+    
+    // Set defaults
+    document.querySelector('.zone-option[data-zone="regular"]').classList.add('selected');
+    document.querySelector('.smoking-option[data-smoking="false"]').classList.add('selected');
+    
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (!guestCountInput.value) {
+            alert('Пожалуйста, выберите количество гостей');
+            return;
+        }
+        
+        // Redirect to table selection with parameters
+        const params = new URLSearchParams({
+            date: dateInput.value,
+            time: document.getElementById('time').value,
+            guest_count: guestCountInput.value,
+            zone: zoneInput.value,
+            smoking_preference: smokingInput.value
+        });
+        
+        window.location.href = `/table-selection/${guestCountInput.value}/?${params.toString()}`;
+    });
+});
+</script>
+{% endblock %}
+
+

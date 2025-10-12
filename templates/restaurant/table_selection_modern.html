@@ -1,0 +1,512 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Выбор стола - SkyBAR{% endblock %}
+
+{% block content %}
+<!-- Progress Steps -->
+<section class="py-3 bg-light border-bottom">
+    <div class="container">
+        <div class="d-flex justify-content-center align-items-center flex-wrap">
+            <div class="step-item completed">
+                <div class="step-circle"><i class="fas fa-check"></i></div>
+                <div class="step-label">Параметры</div>
+            </div>
+            <div class="step-line completed"></div>
+            <div class="step-item active">
+                <div class="step-circle">2</div>
+                <div class="step-label">Выбор стола</div>
+            </div>
+            <div class="step-line"></div>
+            <div class="step-item">
+                <div class="step-circle">3</div>
+                <div class="step-label">Подтверждение</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<section class="py-4">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Floor Plan -->
+            <div class="col-lg-9 mb-4">
+                <div class="card border-0 shadow">
+                    <div class="card-header bg-white border-bottom py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fas fa-map-marked-alt text-primary me-2"></i>
+                                План ресторана SkyBAR
+                            </h5>
+                            <div class="d-flex gap-3">
+                                <div><span class="legend-dot available"></span> Доступен</div>
+                                <div><span class="legend-dot selected"></span> Выбран</div>
+                                <div><span class="legend-dot occupied"></span> Занят</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0" style="background: #f8f9fa;">
+                        <div class="restaurant-plan position-relative" style="height: 700px; overflow: hidden;">
+                            <!-- Main Hall Label -->
+                            <div class="zone-label" style="left: 20px; top: 20px;">
+                                <i class="fas fa-chair me-2"></i>Основной зал (не курящая)
+                            </div>
+                            
+                            <!-- VIP Zone Label -->
+                            <div class="zone-label vip-label" style="right: 20px; top: 20px;">
+                                <i class="fas fa-crown me-2"></i>VIP зона
+                            </div>
+                            
+                            <!-- Smoking Zone Label -->
+                            <div class="zone-label smoking-label" style="left: 20px; bottom: 180px;">
+                                <i class="fas fa-smoking me-2"></i>Зона для курящих
+                            </div>
+                            
+                            <!-- Bar Label -->
+                            <div class="zone-label bar-label" style="right: 20px; bottom: 180px;">
+                                <i class="fas fa-cocktail me-2"></i>Барная стойка
+                            </div>
+                            
+                            <!-- Stage Label -->
+                            <div class="stage-area" style="left: 50%; bottom: 20px; transform: translateX(-50%);">
+                                <i class="fas fa-microphone-alt me-2"></i>
+                                <span>СЦЕНА</span>
+                                <i class="fas fa-music ms-2"></i>
+                            </div>
+                            
+                            <!-- Tables Container -->
+                            <div id="tables-container" class="p-4" style="height: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Booking Panel -->
+            <div class="col-lg-3">
+                <div class="card border-0 shadow sticky-top" style="top: 90px;">
+                    <div class="card-header text-white py-3" style="background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);">
+                        <h6 class="mb-0">
+                            <i class="fas fa-clipboard-list me-2"></i>
+                            Детали бронирования
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="small text-muted">Гостей:</label>
+                            <div class="fs-3 fw-bold text-primary">{{ guest_count }}</div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div id="no-selection" class="text-center py-4">
+                            <i class="fas fa-hand-pointer fa-3x text-muted opacity-50 mb-3"></i>
+                            <p class="text-muted">Выберите стол на карте</p>
+                        </div>
+                        
+                        <div id="selection-info" style="display: none;">
+                            <div class="mb-3">
+                                <label class="small text-muted">Стол №</label>
+                                <div class="fs-2 fw-bold" id="table-number"></div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="small text-muted">Зона:</label>
+                                <div id="table-zone" class="fw-bold"></div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="small text-muted d-block mb-2">Выберите места ({{ guest_count }}):</label>
+                                <div id="seats-container" class="d-flex flex-wrap gap-2"></div>
+                            </div>
+                            
+                            <hr>
+                            
+                            <form id="booking-form">
+                                {% csrf_token %}
+                                <input type="hidden" id="table-id" name="table_id">
+                                <input type="hidden" id="selected-seats" name="seat_ids">
+                                
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold">Дата</label>
+                                    <input type="date" class="form-control" id="date" name="date" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold">Время</label>
+                                    <select class="form-select" id="time" name="time" required>
+                                        <option value="">Выберите</option>
+                                        {% for hour in "12131415161718192021222300"|make_list|slice:"::2" %}
+                                        <option value="{{ hour }}:00">{{ hour }}:00</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="is-birthday">
+                                        <label class="form-check-label small" for="is-birthday">
+                                            <i class="fas fa-birthday-cake me-1"></i> День рождения
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div id="birthday-group" class="mb-3" style="display: none;">
+                                    <input type="text" class="form-control" id="birthday-name" placeholder="Имя именинника">
+                                </div>
+                                
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-success btn-lg" id="submit-btn" disabled>
+                                        <i class="fas fa-check me-2"></i>
+                                        Подтвердить
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Tables Data -->
+<script>
+const tablesData = {{ tables|safe }};
+const guestCount = {{ guest_count }};
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Steps */
+    .step-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .step-circle {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: #e9ecef;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+    
+    .step-item.active .step-circle {
+        background: #0d6efd;
+        color: white;
+    }
+    
+    .step-item.completed .step-circle {
+        background: #198754;
+        color: white;
+    }
+    
+    .step-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        white-space: nowrap;
+    }
+    
+    .step-line {
+        width: 80px;
+        height: 2px;
+        background: #e9ecef;
+        margin: 0 15px;
+        margin-top: 22px;
+    }
+    
+    .step-line.completed {
+        background: #198754;
+    }
+    
+    /* Legend */
+    .legend-dot {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
+    
+    .legend-dot.available {
+        background: #198754;
+    }
+    
+    .legend-dot.selected {
+        background: #ffc107;
+    }
+    
+    .legend-dot.occupied {
+        background: #dc3545;
+    }
+    
+    /* Zone Labels */
+    .zone-label {
+        position: absolute;
+        background: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 0.9rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        z-index: 10;
+    }
+    
+    .vip-label {
+        background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+        color: white;
+    }
+    
+    .smoking-label {
+        background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        color: white;
+    }
+    
+    .bar-label {
+        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+        color: white;
+    }
+    
+    /* Stage */
+    .stage-area {
+        position: absolute;
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        color: white;
+        padding: 15px 40px;
+        border-radius: 10px 10px 0 0;
+        font-weight: bold;
+        font-size: 1.2rem;
+        box-shadow: 0 -4px 15px rgba(220, 53, 69, 0.3);
+        z-index: 5;
+    }
+    
+    /* Tables */
+    .table-btn {
+        position: absolute;
+        width: 70px;
+        height: 70px;
+        border-radius: 10px;
+        border: 2px solid;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: bold;
+        background: white;
+    }
+    
+    .table-btn.available {
+        border-color: #198754;
+        box-shadow: 0 2px 5px rgba(25, 135, 84, 0.2);
+    }
+    
+    .table-btn.available:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 4px 15px rgba(25, 135, 84, 0.4);
+    }
+    
+    .table-btn.selected {
+        border-color: #ffc107;
+        background: #fff3cd;
+        box-shadow: 0 4px 15px rgba(255, 193, 7, 0.5);
+        transform: scale(1.1);
+    }
+    
+    .table-btn.occupied {
+        border-color: #dc3545;
+        background: #f8d7da;
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .table-number {
+        font-size: 1.1rem;
+    }
+    
+    .table-capacity {
+        font-size: 0.75rem;
+        color: #6c757d;
+    }
+    
+    /* Seat Selection */
+    .seat-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid #0d6efd;
+        background: white;
+        color: #0d6efd;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .seat-btn:hover {
+        transform: scale(1.1);
+    }
+    
+    .seat-btn.selected {
+        background: #198754;
+        border-color: #198754;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('tables-container');
+    const noSelection = document.getElementById('no-selection');
+    const selectionInfo = document.getElementById('selection-info');
+    const dateInput = document.getElementById('date');
+    const birthdayCheck = document.getElementById('is-birthday');
+    const birthdayGroup = document.getElementById('birthday-group');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    let selectedTable = null;
+    let selectedSeats = [];
+    
+    // Set min date
+    dateInput.min = new Date().toISOString().split('T')[0];
+    dateInput.value = dateInput.min;
+    
+    // Birthday toggle
+    birthdayCheck.addEventListener('change', () => {
+        birthdayGroup.style.display = birthdayCheck.checked ? 'block' : 'none';
+    });
+    
+    // Render tables
+    tablesData.forEach(table => {
+        const btn = document.createElement('div');
+        btn.className = `table-btn ${table.is_available ? 'available' : 'occupied'}`;
+        btn.style.left = table.x_position + 'px';
+        btn.style.top = table.y_position + 'px';
+        btn.innerHTML = `
+            <div class="table-number">${table.number}</div>
+            <div class="table-capacity"><i class="fas fa-users"></i> ${table.max_seats}</div>
+            ${table.zone === 'vip' ? '<i class="fas fa-crown text-warning"></i>' : ''}
+        `;
+        
+        if (table.is_available) {
+            btn.addEventListener('click', () => selectTable(table, btn));
+        }
+        
+        container.appendChild(btn);
+    });
+    
+    function selectTable(table, btn) {
+        // Clear previous
+        document.querySelectorAll('.table-btn.selected').forEach(el => el.classList.remove('selected'));
+        btn.classList.add('selected');
+        
+        selectedTable = table;
+        selectedSeats = [];
+        
+        // Update UI
+        noSelection.style.display = 'none';
+        selectionInfo.style.display = 'block';
+        document.getElementById('table-number').textContent = table.number;
+        document.getElementById('table-zone').textContent = table.zone === 'vip' ? 'VIP зона' : 'Обычная зона';
+        document.getElementById('table-id').value = table.id;
+        
+        renderSeats(table.max_seats);
+        updateSubmitButton();
+    }
+    
+    function renderSeats(maxSeats) {
+        const seatsContainer = document.getElementById('seats-container');
+        seatsContainer.innerHTML = '';
+        
+        for (let i = 1; i <= maxSeats; i++) {
+            const seatBtn = document.createElement('div');
+            seatBtn.className = 'seat-btn';
+            seatBtn.textContent = i;
+            seatBtn.onclick = () => toggleSeat(i, seatBtn);
+            seatsContainer.appendChild(seatBtn);
+        }
+    }
+    
+    function toggleSeat(seatNum, btn) {
+        const idx = selectedSeats.indexOf(seatNum);
+        
+        if (idx > -1) {
+            selectedSeats.splice(idx, 1);
+            btn.classList.remove('selected');
+        } else {
+            if (selectedSeats.length < guestCount) {
+                selectedSeats.push(seatNum);
+                btn.classList.add('selected');
+            } else {
+                alert(`Выберите не более ${guestCount} мест`);
+            }
+        }
+        
+        updateSubmitButton();
+    }
+    
+    function updateSubmitButton() {
+        const hasTable = selectedTable !== null;
+        const hasSeats = selectedSeats.length === guestCount;
+        const hasDate = dateInput.value !== '';
+        const hasTime = document.getElementById('time').value !== '';
+        
+        submitBtn.disabled = !(hasTable && hasSeats && hasDate && hasTime);
+    }
+    
+    dateInput.addEventListener('change', updateSubmitButton);
+    document.getElementById('time').addEventListener('change', updateSubmitButton);
+    
+    // Form submit
+    document.getElementById('booking-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = {
+            table_id: selectedTable.id,
+            seat_ids: selectedSeats,
+            date: dateInput.value,
+            time: document.getElementById('time').value,
+            is_birthday: birthdayCheck.checked,
+            birthday_person_name: document.getElementById('birthday-name').value,
+            guest_count: guestCount
+        };
+        
+        fetch('{% url "create_reservation" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = data.redirect_url;
+            } else {
+                alert(data.error || 'Ошибка при бронировании');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Произошла ошибка');
+        });
+    });
+});
+</script>
+{% endblock %}
+
+

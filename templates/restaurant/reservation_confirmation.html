@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Подтверждение бронирования - SkyBAR{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold text-primary mb-3">
+                    <i class="fas fa-clock me-2"></i>
+                    Подтверждение бронирования
+                </h1>
+                <p class="lead text-muted">
+                    У вас есть <span id="time-remaining" class="fw-bold text-danger">10:00</span> минут для подтверждения бронирования
+                </p>
+            </div>
+
+            <!-- Timer Alert -->
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Внимание!</strong> Если вы не подтвердите бронирование в течение 10 минут, 
+                выбранные места будут освобождены для других гостей.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- Reservation Details -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-calendar-check me-2"></i>
+                        Детали бронирования
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-muted">Дата и время</h6>
+                            <p class="mb-3">
+                                <i class="fas fa-calendar me-2 text-primary"></i>
+                                {{ reservation.date|date:"d.m.Y" }} в {{ reservation.time|time:"H:i" }}
+                            </p>
+                            
+                            <h6 class="fw-bold text-muted">Стол</h6>
+                            <p class="mb-3">
+                                <i class="fas fa-chair me-2 text-primary"></i>
+                                Стол №{{ reservation.table.number }} ({{ reservation.table.get_zone_display }})
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-muted">Количество гостей</h6>
+                            <p class="mb-3">
+                                <i class="fas fa-users me-2 text-primary"></i>
+                                {{ reservation.guest_count }} человек
+                            </p>
+                            
+                            <h6 class="fw-bold text-muted">Места</h6>
+                            <p class="mb-3">
+                                <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                                {% for seat in reservation.seats.all %}
+                                    Место {{ seat.seat_number }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    {% if reservation.is_birthday %}
+                    <div class="row">
+                        <div class="col-12">
+                            <h6 class="fw-bold text-muted">День рождения</h6>
+                            <p class="mb-0">
+                                <i class="fas fa-birthday-cake me-2 text-warning"></i>
+                                Поздравляем {{ reservation.birthday_person_name }}!
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if reservation.special_requests %}
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h6 class="fw-bold text-muted">Особые пожелания</h6>
+                            <p class="mb-0">{{ reservation.special_requests }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Confirmation Form -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-credit-card me-2"></i>
+                        Подтверждение и оплата
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="confirmation-form">
+                        {% csrf_token %}
+                        
+                        <!-- Comment Field -->
+                        <div class="mb-4">
+                            <label for="confirmation_comment" class="form-label fw-bold">
+                                <i class="fas fa-comment me-2"></i>
+                                Комментарий к бронированию (необязательно)
+                            </label>
+                            <textarea 
+                                class="form-control" 
+                                id="confirmation_comment" 
+                                name="confirmation_comment" 
+                                rows="3" 
+                                placeholder="Дополнительные пожелания, особые требования к столику и т.д."
+                            ></textarea>
+                            <div class="form-text">
+                                Вы можете оставить комментарий с дополнительными пожеланиями
+                            </div>
+                        </div>
+
+                        <!-- Payment Info -->
+                        <div class="alert alert-info">
+                            <h6 class="fw-bold mb-2">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Информация об оплате
+                            </h6>
+                            <p class="mb-0">
+                                Оплата производится на месте в ресторане. 
+                                Бронирование подтверждается бесплатно.
+                            </p>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+                            <a href="{% url 'booking_preferences' %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-arrow-left me-2"></i>
+                                Назад к выбору
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg" id="confirm-btn">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Подтвердить и оплатить
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Timer functionality
+    const timeElement = document.getElementById('time-remaining');
+    const confirmBtn = document.getElementById('confirm-btn');
+    const form = document.getElementById('confirmation-form');
+    
+    // Get expiration time from server (we'll calculate it client-side for simplicity)
+    let timeLeft = 10 * 60; // 10 minutes in seconds
+    
+    function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        
+        timeElement.textContent = 
+            minutes.toString().padStart(2, '0') + ':' + 
+            seconds.toString().padStart(2, '0');
+        
+        if (timeLeft <= 0) {
+            // Time expired
+            timeElement.textContent = '00:00';
+            timeElement.className = 'fw-bold text-danger';
+            
+            // Disable form and show warning
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<i class="fas fa-times me-2"></i>Время истекло';
+            
+            // Show alert
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+            alertDiv.innerHTML = `
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Время истекло!</strong> Бронирование автоматически отменено.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            form.parentNode.insertBefore(alertDiv, form);
+            
+            // Redirect after 3 seconds
+            setTimeout(() => {
+                window.location.href = '{% url "booking_preferences" %}';
+            }, 3000);
+            
+            return;
+        }
+        
+        timeLeft--;
+        
+        // Change color when less than 2 minutes
+        if (timeLeft < 120) {
+            timeElement.className = 'fw-bold text-danger';
+        } else if (timeLeft < 300) {
+            timeElement.className = 'fw-bold text-warning';
+        }
+    }
+    
+    // Update timer every second
+    const timerInterval = setInterval(updateTimer, 1000);
+    
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        if (timeLeft <= 0) {
+            e.preventDefault();
+            return false;
+        }
+        
+        // Show loading state
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Обработка...';
+    });
+    
+    // Clean up timer when page unloads
+    window.addEventListener('beforeunload', function() {
+        clearInterval(timerInterval);
+    });
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border: none;
+        border-radius: 15px;
+    }
+    
+    .card-header {
+        border-radius: 15px 15px 0 0 !important;
+    }
+    
+    .btn-lg {
+        padding: 12px 30px;
+        font-size: 1.1rem;
+        border-radius: 10px;
+    }
+    
+    .alert {
+        border-radius: 10px;
+    }
+    
+    .form-control {
+        border-radius: 8px;
+    }
+    
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+</style>
+{% endblock %}
+

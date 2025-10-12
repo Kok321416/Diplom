@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Выбор способа бронирования - SkyBAR{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold text-primary mb-3">
+                    <i class="fas fa-calendar-check me-2"></i>
+                    Выберите способ бронирования
+                </h1>
+                <p class="lead text-muted">
+                    Забронируйте стол удобным для вас способом
+                </p>
+            </div>
+
+            <!-- Booking Options -->
+            <div class="row g-5 justify-content-center">
+                <!-- Interactive Booking -->
+                <div class="col-lg-5 col-md-6">
+                    <div class="card border-0 shadow-lg booking-option-card h-100">
+                        <div class="card-body p-5 text-center d-flex flex-column">
+                            <div class="mb-4">
+                                <i class="fas fa-map-marked-alt text-primary" style="font-size: 5rem;"></i>
+                            </div>
+                            <h3 class="card-title fw-bold mb-3">Бронирование через карту столов</h3>
+                            <p class="card-text text-muted mb-4">
+                                Выберите стол на интерактивной карте ресторана. 
+                                Вы сможете увидеть расположение всех столов и выбрать конкретные места.
+                            </p>
+                            
+                            <ul class="list-unstyled text-start mb-4">
+                                <li class="mb-3">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    <strong>Визуальный выбор</strong> - видите план зала
+                                </li>
+                                <li class="mb-3">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    <strong>Конкретные места</strong> - выбираете каждое место
+                                </li>
+                                <li class="mb-3">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    <strong>Зоны ресторана</strong> - VIP, обычная, курящая
+                                </li>
+                                <li class="mb-3">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    <strong>Мгновенное бронирование</strong> - подтверждение за 10 минут
+                                </li>
+                            </ul>
+                            
+                            <a href="{% url 'booking_preferences' %}" class="btn btn-primary btn-lg w-100 mt-auto py-3">
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                Выбрать на карте
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Direct Booking -->
+                <div class="col-lg-5 col-md-6">
+                    <div class="card border-0 shadow-lg booking-option-card h-100">
+                        <div class="card-body p-5 text-center d-flex flex-column">
+                            <div class="mb-4">
+                                <i class="fas fa-file-alt text-warning" style="font-size: 5rem;"></i>
+                            </div>
+                            <h3 class="card-title fw-bold mb-3">Обычная заявка</h3>
+                            <p class="card-text text-muted mb-4">
+                                Заполните простую форму с параметрами бронирования. 
+                                Администратор свяжется с вами для подтверждения деталей.
+                            </p>
+                            
+                            <ul class="list-unstyled text-start mb-4">
+                                <li class="mb-3">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    <strong>Простая форма</strong> - заполнение за 2 минуты
+                                </li>
+                                <li class="mb-3">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    <strong>Выбор даты и времени</strong> - удобный календарь
+                                </li>
+                                <li class="mb-3">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    <strong>Особые пожелания</strong> - комментарии к заявке
+                                </li>
+                                <li class="mb-3">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    <strong>Звонок администратора</strong> - личное подтверждение
+                                </li>
+                            </ul>
+                            
+                            <a href="{% url 'direct_reservation' %}" class="btn btn-warning btn-lg w-100 mt-auto py-3">
+                                <i class="fas fa-pen me-2"></i>
+                                Оставить заявку
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back Button -->
+            <div class="text-center mt-5">
+                <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-lg">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    На главную
+                </a>
+            </div>
+
+            <!-- Info Section -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="alert alert-info border-0 shadow-sm" role="alert">
+                        <div class="d-flex align-items-start">
+                            <i class="fas fa-info-circle fs-3 me-3 text-primary"></i>
+                            <div>
+                                <h5 class="alert-heading mb-2 fw-bold">Как выбрать?</h5>
+                                <div class="row">
+                                    <div class="col-md-6 mb-2">
+                                        <p class="mb-0">
+                                            <strong class="text-primary">Карта столов:</strong> Для тех, кто хочет сам выбрать конкретное расположение и места. Идеально для компаний и особых случаев.
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <p class="mb-0">
+                                            <strong class="text-warning">Обычная заявка:</strong> Для тех, кто хочет быстро оставить заявку. Администратор подберет лучший вариант и свяжется с вами.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .booking-option-card {
+        transition: all 0.3s ease;
+        border-radius: 20px;
+        min-height: 550px;
+    }
+    
+    .booking-option-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.2) !important;
+    }
+    
+    .card-body {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .btn-lg {
+        padding: 15px 30px;
+        font-size: 1.1rem;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        font-weight: 600;
+    }
+    
+    .btn-lg:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+    
+    @media (max-width: 991px) {
+        .booking-option-card {
+            min-height: auto;
+        }
+    }
+</style>
+{% endblock %}
+

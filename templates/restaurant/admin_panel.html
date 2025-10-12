@@ -1,0 +1,324 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Админ-панель - SkyBAR{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="display-6 fw-bold text-primary mb-2">
+                        <i class="fas fa-cogs me-2"></i>
+                        Админ-панель
+                    </h1>
+                    <p class="text-muted mb-0">Управление рестораном SkyBAR</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'admin_table_selection' %}" class="btn btn-success">
+                        <i class="fas fa-map me-2"></i>
+                        Выбор столов
+                    </a>
+                    <a href="{% url 'home' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-home me-2"></i>
+                        На главную
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title text-white-50">Всего бронирований</h6>
+                            <h3 class="mb-0">{{ total_reservations }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-calendar-alt fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title text-white-50">Подтверждено</h6>
+                            <h3 class="mb-0">{{ confirmed_reservations }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title text-white-50">Ожидают</h6>
+                            <h3 class="mb-0">{{ pending_reservations }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-clock fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title text-white-50">Сегодня</h6>
+                            <h3 class="mb-0">{{ today_reservations }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-calendar-day fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reservations Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list me-2"></i>
+                        Все бронирования
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if reservations %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Пользователь</th>
+                                        <th>Стол</th>
+                                        <th>Дата/Время</th>
+                                        <th>Гостей</th>
+                                        <th>Статус</th>
+                                        <th>Создано</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for reservation in reservations %}
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-secondary">#{{ reservation.id }}</span>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <strong>{{ reservation.user.first_name }} {{ reservation.user.last_name }}</strong>
+                                                <br>
+                                                <small class="text-muted">{{ reservation.user.phone }}</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <strong>Стол №{{ reservation.table.number }}</strong>
+                                                <br>
+                                                <small class="text-muted">{{ reservation.table.get_zone_display }}</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <strong>{{ reservation.date|date:"d.m.Y" }}</strong>
+                                                <br>
+                                                <small class="text-muted">{{ reservation.time|time:"H:i" }}</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-primary">{{ reservation.guest_count }}</span>
+                                        </td>
+                                        <td>
+                                            {% if reservation.status == 'confirmed' %}
+                                                <span class="badge bg-success">{{ reservation.get_status_display }}</span>
+                                            {% elif reservation.status == 'pending' %}
+                                                <span class="badge bg-warning">{{ reservation.get_status_display }}</span>
+                                            {% elif reservation.status == 'cancelled' %}
+                                                <span class="badge bg-danger">{{ reservation.get_status_display }}</span>
+                                            {% elif reservation.status == 'completed' %}
+                                                <span class="badge bg-info">{{ reservation.get_status_display }}</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ reservation.get_status_display }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <small>{{ reservation.created_at|date:"d.m.Y H:i" }}</small>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <button type="button" class="btn btn-outline-primary" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#reservationModal{{ reservation.id }}">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                {% if reservation.status == 'pending' %}
+                                                <button type="button" class="btn btn-outline-success" 
+                                                        onclick="confirmReservation({{ reservation.id }})">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-calendar-times text-muted mb-3" style="font-size: 3rem;"></i>
+                            <h5 class="text-muted">Нет бронирований</h5>
+                            <p class="text-muted">Бронирования появятся здесь</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reservation Details Modals -->
+{% for reservation in reservations %}
+<div class="modal fade" id="reservationModal{{ reservation.id }}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-calendar-check me-2"></i>
+                    Бронирование #{{ reservation.id }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-muted">Информация о клиенте</h6>
+                        <p><strong>Имя:</strong> {{ reservation.user.first_name }} {{ reservation.user.last_name }}</p>
+                        <p><strong>Телефон:</strong> {{ reservation.user.phone }}</p>
+                        <p><strong>Email:</strong> {{ reservation.user.email }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-muted">Детали бронирования</h6>
+                        <p><strong>Стол:</strong> №{{ reservation.table.number }} ({{ reservation.table.get_zone_display }})</p>
+                        <p><strong>Дата:</strong> {{ reservation.date|date:"d.m.Y" }} в {{ reservation.time|time:"H:i" }}</p>
+                        <p><strong>Гостей:</strong> {{ reservation.guest_count }}</p>
+                        <p><strong>Статус:</strong> 
+                            {% if reservation.status == 'confirmed' %}
+                                <span class="badge bg-success">{{ reservation.get_status_display }}</span>
+                            {% elif reservation.status == 'pending' %}
+                                <span class="badge bg-warning">{{ reservation.get_status_display }}</span>
+                            {% elif reservation.status == 'cancelled' %}
+                                <span class="badge bg-danger">{{ reservation.get_status_display }}</span>
+                            {% elif reservation.status == 'completed' %}
+                                <span class="badge bg-info">{{ reservation.get_status_display }}</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ reservation.get_status_display }}</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                
+                {% if reservation.is_birthday %}
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6 class="fw-bold text-muted">День рождения</h6>
+                        <p class="mb-0">
+                            <i class="fas fa-birthday-cake me-2 text-warning"></i>
+                            Поздравляем {{ reservation.birthday_person_name }}!
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if reservation.special_requests %}
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6 class="fw-bold text-muted">Особые пожелания</h6>
+                        <p class="mb-0">{{ reservation.special_requests }}</p>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6 class="fw-bold text-muted">Места</h6>
+                        <p class="mb-0">
+                            {% for seat in reservation.seats.all %}
+                                Место {{ seat.seat_number }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                {% if reservation.status == 'pending' %}
+                <button type="button" class="btn btn-success" onclick="confirmReservation({{ reservation.id }})">
+                    <i class="fas fa-check me-1"></i>
+                    Подтвердить
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function confirmReservation(reservationId) {
+    if (confirm('Подтвердить это бронирование?')) {
+        // Здесь можно добавить AJAX запрос для подтверждения
+        alert('Функция подтверждения будет реализована');
+    }
+}
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border: none;
+        border-radius: 15px;
+    }
+    
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        color: #6c757d;
+    }
+    
+    .badge {
+        font-size: 0.75rem;
+    }
+    
+    .btn-group-sm .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %}
+

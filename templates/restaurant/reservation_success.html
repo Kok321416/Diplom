@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Бронирование подтверждено - SkyBAR{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Success Header -->
+            <div class="text-center mb-5">
+                <div class="success-icon mb-4">
+                    <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                </div>
+                <h1 class="display-5 fw-bold text-success mb-3">
+                    Бронирование подтверждено!
+                </h1>
+                <p class="lead text-muted">
+                    Ваше бронирование успешно создано и подтверждено
+                </p>
+            </div>
+
+            <!-- Reservation Details -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-calendar-check me-2"></i>
+                        Детали бронирования
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-muted">Номер бронирования</h6>
+                            <p class="mb-3">
+                                <i class="fas fa-hashtag me-2 text-primary"></i>
+                                #{{ reservation.id }}
+                            </p>
+                            
+                            <h6 class="fw-bold text-muted">Дата и время</h6>
+                            <p class="mb-3">
+                                <i class="fas fa-calendar me-2 text-primary"></i>
+                                {{ reservation.date|date:"d.m.Y" }} в {{ reservation.time|time:"H:i" }}
+                            </p>
+                            
+                            <h6 class="fw-bold text-muted">Стол</h6>
+                            <p class="mb-3">
+                                <i class="fas fa-chair me-2 text-primary"></i>
+                                Стол №{{ reservation.table.number }} ({{ reservation.table.get_zone_display }})
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-muted">Количество гостей</h6>
+                            <p class="mb-3">
+                                <i class="fas fa-users me-2 text-primary"></i>
+                                {{ reservation.guest_count }} человек
+                            </p>
+                            
+                            <h6 class="fw-bold text-muted">Места</h6>
+                            <p class="mb-3">
+                                <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                                {% for seat in reservation.seats.all %}
+                                    Место {{ seat.seat_number }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </p>
+                            
+                            <h6 class="fw-bold text-muted">Статус</h6>
+                            <p class="mb-3">
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check me-1"></i>
+                                    {{ reservation.get_status_display }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    {% if reservation.is_birthday %}
+                    <div class="row">
+                        <div class="col-12">
+                            <h6 class="fw-bold text-muted">День рождения</h6>
+                            <p class="mb-0">
+                                <i class="fas fa-birthday-cake me-2 text-warning"></i>
+                                Поздравляем {{ reservation.birthday_person_name }}!
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if reservation.special_requests %}
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h6 class="fw-bold text-muted">Комментарий</h6>
+                            <p class="mb-0">{{ reservation.special_requests }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Important Information -->
+            <div class="alert alert-info">
+                <h6 class="fw-bold mb-2">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Важная информация
+                </h6>
+                <ul class="mb-0">
+                    <li>Пожалуйста, приходите вовремя. Опоздание более чем на 15 минут может привести к отмене бронирования.</li>
+                    <li>Оплата производится на месте в ресторане.</li>
+                    <li>При отмене бронирования менее чем за 2 часа до времени визита может взиматься штраф.</li>
+                    <li>Если у вас есть вопросы, звоните по телефону: <a href="tel:+79500689564" class="text-decoration-none">+7 (950) 068-95-64</a></li>
+                </ul>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                <a href="{% url 'home' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-home me-2"></i>
+                    На главную
+                </a>
+                <a href="{% url 'my_reservations' %}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-list me-2"></i>
+                    Мои бронирования
+                </a>
+                <a href="{% url 'booking_preferences' %}" class="btn btn-success btn-lg">
+                    <i class="fas fa-plus me-2"></i>
+                    Новое бронирование
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border: none;
+        border-radius: 15px;
+    }
+    
+    .card-header {
+        border-radius: 15px 15px 0 0 !important;
+    }
+    
+    .btn-lg {
+        padding: 12px 30px;
+        font-size: 1.1rem;
+        border-radius: 10px;
+    }
+    
+    .alert {
+        border-radius: 10px;
+    }
+    
+    .success-icon {
+        animation: bounceIn 0.6s ease-in-out;
+    }
+    
+    @keyframes bounceIn {
+        0% {
+            transform: scale(0.3);
+            opacity: 0;
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        70% {
+            transform: scale(0.9);
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+</style>
+{% endblock %}
+

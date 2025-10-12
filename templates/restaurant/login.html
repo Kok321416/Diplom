@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Вход - SkyBAR{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="card-title mb-0 text-center">
+                        <i class="fas fa-sign-in-alt me-2"></i>
+                        Вход в SkyBAR
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="username" class="form-label fw-bold">
+                                <i class="fas fa-user me-2"></i>
+                                Имя пользователя
+                            </label>
+                            <input type="text" class="form-control" id="username" name="username" 
+                                   placeholder="Введите ваше имя" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password" class="form-label fw-bold">
+                                <i class="fas fa-lock me-2"></i>
+                                Пароль
+                            </label>
+                            <input type="password" class="form-control" id="password" name="password" 
+                                   placeholder="Введите пароль" required>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i>
+                                Войти
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <p class="mb-0">
+                        Нет аккаунта? 
+                        <a href="{% url 'register' %}" class="text-decoration-none">
+                            Зарегистрироваться
+                        </a>
+                    </p>
+                    <p class="mb-0 mt-2">
+                        <a href="{% url 'home' %}" class="text-decoration-none">
+                            <i class="fas fa-home me-1"></i>
+                            На главную
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border: none;
+        border-radius: 15px;
+    }
+    
+    .card-header {
+        border-radius: 15px 15px 0 0 !important;
+    }
+    
+    .btn-lg {
+        padding: 12px 30px;
+        font-size: 1.1rem;
+        border-radius: 10px;
+    }
+    
+    .form-control {
+        border-radius: 8px;
+    }
+    
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+</style>
+{% endblock %}

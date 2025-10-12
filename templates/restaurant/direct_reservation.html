@@ -1,0 +1,1165 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Прямое бронирование - SkyBAR{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="text-center mb-5 header-section">
+                <div class="icon-wrapper mb-4">
+                    <i class="fas fa-calendar-plus"></i>
+                </div>
+                <h1 class="display-4 fw-bold gradient-text mb-3 animate-slide-up">
+                    Прямое бронирование
+                </h1>
+                <p class="lead subtitle-text animate-slide-up" style="animation-delay: 0.2s;">
+                    Заполните форму для быстрого бронирования стола
+                </p>
+                <div class="decorative-line"></div>
+            </div>
+
+            <!-- Reservation Form -->
+            <div class="card shadow-lg form-card animate-fade-in" style="animation-delay: 0.3s;">
+                <div class="card-header gradient-header text-white">
+                    <h5 class="card-title mb-0 header-title">
+                        <i class="fas fa-edit me-2 icon-bounce"></i>
+                        Форма бронирования
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Guest Count -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold mb-3">
+                                        <i class="fas fa-users me-2"></i>
+                                        Количество гостей
+                                    </label>
+                            <div class="guest-count-selector">
+                                <button type="button" class="count-btn minus" data-action="decrease">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <div class="count-display">
+                                    <span id="guest-count-value">1</span>
+                                    <input type="hidden" name="guest_count" id="guest_count" value="1">
+                                </div>
+                                <button type="button" class="count-btn plus" data-action="increase">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <small class="text-muted d-block text-center mt-2">Максимум 12 гостей</small>
+                        </div>
+
+                        <!-- Zone Selection -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold mb-3">
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                Выберите зону
+                            </label>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="zone-selector-card" data-zone="regular">
+                                        <div class="zone-icon">
+                                            <i class="fas fa-chair"></i>
+                                        </div>
+                                        <h6 class="zone-title">Обычная зона</h6>
+                                        <p class="zone-description">Комфортные столы в основном зале</p>
+                                        <div class="zone-check">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="zone-selector-card" data-zone="vip">
+                                        <div class="zone-icon vip-icon">
+                                            <i class="fas fa-crown"></i>
+                            </div>
+                                        <h6 class="zone-title">VIP зона</h6>
+                                        <p class="zone-description">Премиум столы с особым сервисом</p>
+                                        <div class="zone-check">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="zone" id="zone-input" value="" required>
+                        </div>
+
+                        <!-- Date Selection -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold mb-3">
+                                        <i class="fas fa-calendar me-2"></i>
+                                Дата посещения
+                                    </label>
+                                    {{ form.date }}
+                                    {% if form.date.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.date.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                        <!-- Time Selection -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold mb-3">
+                                        <i class="fas fa-clock me-2"></i>
+                                Время посещения
+                                    </label>
+                            <div class="time-selector-grid">
+                                <div class="time-card" data-time="12:00">
+                                    <div class="time-icon"><i class="fas fa-sun"></i></div>
+                                    <div class="time-value">12:00</div>
+                                    <div class="time-period">Обед</div>
+                                </div>
+                                <div class="time-card" data-time="15:00">
+                                    <div class="time-icon"><i class="fas fa-coffee"></i></div>
+                                    <div class="time-value">15:00</div>
+                                    <div class="time-period">После обеда</div>
+                                </div>
+                                <div class="time-card" data-time="18:00">
+                                    <div class="time-icon"><i class="fas fa-cloud-sun"></i></div>
+                                    <div class="time-value">18:00</div>
+                                    <div class="time-period">Вечер</div>
+                                </div>
+                                <div class="time-card" data-time="20:00">
+                                    <div class="time-icon"><i class="fas fa-utensils"></i></div>
+                                    <div class="time-value">20:00</div>
+                                    <div class="time-period">Ужин</div>
+                                </div>
+                                <div class="time-card" data-time="22:00">
+                                    <div class="time-icon"><i class="fas fa-moon"></i></div>
+                                    <div class="time-value">22:00</div>
+                                    <div class="time-period">Поздний вечер</div>
+                                        </div>
+                                <div class="time-card" data-time="00:00">
+                                    <div class="time-icon"><i class="fas fa-star"></i></div>
+                                    <div class="time-value">00:00</div>
+                                    <div class="time-period">Полночь</div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="time" id="time-input" value="" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="{{ form.is_birthday.id_for_label }}" name="{{ form.is_birthday.name }}">
+                                <label class="form-check-label fw-bold" for="{{ form.is_birthday.id_for_label }}">
+                                    <i class="fas fa-birthday-cake me-2"></i>
+                                    День рождения
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3" id="birthday-name" style="display: none;">
+                            <label for="{{ form.birthday_person_name.id_for_label }}" class="form-label fw-bold">
+                                <i class="fas fa-user me-2"></i>
+                                Имя именинника
+                            </label>
+                            {{ form.birthday_person_name }}
+                            {% if form.birthday_person_name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.birthday_person_name.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ form.special_requests.id_for_label }}" class="form-label fw-bold">
+                                <i class="fas fa-comment me-2"></i>
+                                Особые пожелания
+                            </label>
+                            {{ form.special_requests }}
+                            {% if form.special_requests.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.special_requests.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+                            <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-arrow-left me-2"></i>
+                                На главную
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-check me-2"></i>
+                                Забронировать
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Info Cards -->
+            <div class="row mt-5">
+                <div class="col-md-4 animate-slide-up" style="animation-delay: 0.5s;">
+                    <div class="info-card h-100">
+                        <div class="card-body text-center">
+                            <div class="icon-circle icon-warning mb-3">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <h6 class="fw-bold mb-2">Быстрое бронирование</h6>
+                            <p class="text-muted small mb-0">
+                                Заполните форму и сразу получите подтверждение
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 animate-slide-up" style="animation-delay: 0.6s;">
+                    <div class="info-card h-100">
+                        <div class="card-body text-center">
+                            <div class="icon-circle icon-success mb-3">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h6 class="fw-bold mb-2">Гарантированное место</h6>
+                            <p class="text-muted small mb-0">
+                                Ваш стол будет зарезервирован сразу
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 animate-slide-up" style="animation-delay: 0.7s;">
+                    <div class="info-card h-100">
+                        <div class="card-body text-center">
+                            <div class="icon-circle icon-primary mb-3">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <h6 class="fw-bold mb-2">Поддержка 24/7</h6>
+                            <p class="text-muted small mb-0">
+                                Звоните: <a href="tel:+79500689564" class="phone-link">+7 (950) 068-95-64</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const isBirthdayCheckbox = document.getElementById('{{ form.is_birthday.id_for_label }}');
+    const birthdayNameDiv = document.getElementById('birthday-name');
+    const guestCountValue = document.getElementById('guest-count-value');
+    const guestCountInput = document.getElementById('guest_count');
+    const zoneCards = document.querySelectorAll('.zone-selector-card');
+    const zoneInput = document.getElementById('zone-input');
+    const timeCards = document.querySelectorAll('.time-card');
+    const timeInput = document.getElementById('time-input');
+    
+    let currentGuestCount = 1;
+    
+    // Guest count buttons
+    document.querySelectorAll('.count-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const action = this.dataset.action;
+            
+            if (action === 'increase' && currentGuestCount < 12) {
+                currentGuestCount++;
+                updateGuestCount();
+            } else if (action === 'decrease' && currentGuestCount > 1) {
+                currentGuestCount--;
+                updateGuestCount();
+            }
+        });
+    });
+    
+    function updateGuestCount() {
+        guestCountValue.textContent = currentGuestCount;
+        guestCountInput.value = currentGuestCount;
+        guestCountValue.style.animation = 'none';
+        setTimeout(() => {
+            guestCountValue.style.animation = 'numberPop 0.4s ease';
+        }, 10);
+    }
+    
+    // Zone selection
+    zoneCards.forEach(card => {
+        card.addEventListener('click', function() {
+            zoneCards.forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+            zoneInput.value = this.dataset.zone;
+        });
+    });
+    
+    // Time selection
+    timeCards.forEach(card => {
+        card.addEventListener('click', function() {
+            timeCards.forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+            timeInput.value = this.dataset.time;
+        });
+    });
+    
+    // Birthday checkbox handler
+    if (isBirthdayCheckbox) {
+    isBirthdayCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            birthdayNameDiv.style.display = 'block';
+                birthdayNameDiv.style.animation = 'slideDown 0.5s ease-out forwards';
+            document.getElementById('{{ form.birthday_person_name.id_for_label }}').required = true;
+        } else {
+                birthdayNameDiv.style.animation = 'slideUp 0.3s ease-out forwards';
+                setTimeout(() => {
+            birthdayNameDiv.style.display = 'none';
+                }, 300);
+            document.getElementById('{{ form.birthday_person_name.id_for_label }}').required = false;
+        }
+        });
+    }
+    
+    // Add floating animation to form inputs on focus
+    document.querySelectorAll('.form-control, .form-select').forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.classList.add('input-focused');
+        });
+        
+        input.addEventListener('blur', function() {
+            this.parentElement.classList.remove('input-focused');
+        });
+    });
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Page Background - Soft pastel colors */
+    body {
+        background: linear-gradient(135deg, #e8f5e9 0%, #fff9c4 50%, #ffe0b2 100%);
+        background-attachment: fixed;
+    }
+    
+    .container.py-5 {
+        position: relative;
+    }
+    
+    /* Header Section */
+    .header-section {
+        position: relative;
+    }
+    
+    .icon-wrapper {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto;
+        background: linear-gradient(135deg, #81c784 0%, #aed581 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 40px rgba(129, 199, 132, 0.25),
+                    0 0 60px rgba(174, 213, 129, 0.15);
+        animation: iconFloat 3s ease-in-out infinite;
+    }
+    
+    @keyframes iconFloat {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-15px) rotate(5deg); }
+    }
+    
+    .icon-wrapper i {
+        font-size: 3rem;
+        color: white;
+        animation: iconPulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes iconPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+    
+    .gradient-text {
+        background: linear-gradient(135deg, #4caf50 0%, #66bb6a 50%, #81c784 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        background-size: 200% auto;
+        animation: gradientFlow 4s ease infinite;
+    }
+    
+    @keyframes gradientFlow {
+        0%, 100% { background-position: 0% center; }
+        50% { background-position: 100% center; }
+    }
+    
+    .subtitle-text {
+        color: #495057;
+        font-weight: 500;
+    }
+    
+    .decorative-line {
+        width: 100px;
+        height: 4px;
+        background: linear-gradient(90deg, transparent, #81c784, #aed581, #c5e1a5, transparent);
+        margin: 20px auto;
+        border-radius: 2px;
+        animation: lineExpand 2s ease-in-out infinite;
+    }
+    
+    @keyframes lineExpand {
+        0%, 100% { width: 100px; opacity: 1; }
+        50% { width: 200px; opacity: 0.7; }
+    }
+    
+    /* Slide Up Animation */
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .animate-slide-up {
+        animation: slideUp 0.8s ease-out forwards;
+    }
+    
+    /* Fade In Animation */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    .animate-fade-in {
+        animation: fadeIn 0.8s ease-out forwards;
+        opacity: 0;
+    }
+    
+    /* Form Card */
+    .form-card {
+        border: none !important;
+        border-radius: 25px !important;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2) !important;
+        transition: all 0.4s ease;
+    }
+    
+    .form-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    .gradient-header {
+        background: linear-gradient(135deg, #66bb6a 0%, #81c784 100%) !important;
+        padding: 1.5rem !important;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .gradient-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+        animation: shineEffect 3s linear infinite;
+    }
+    
+    @keyframes shineEffect {
+        0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+        100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+    
+    .header-title {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .icon-bounce {
+        animation: iconBounceAnim 1s ease-in-out infinite;
+    }
+    
+    @keyframes iconBounceAnim {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+    }
+    
+    /* Form Controls */
+    .form-control, .form-select {
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 12px 18px;
+        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    }
+    
+    .form-control:hover, .form-select:hover {
+        border-color: #81c784;
+        transform: translateX(5px);
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #66bb6a;
+        box-shadow: 0 0 0 4px rgba(102, 187, 106, 0.12),
+                    0 0 30px rgba(129, 199, 132, 0.15);
+        transform: translateY(-3px);
+        background: white;
+    }
+    
+    .form-label {
+        color: #495057;
+        font-weight: 600;
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-label i {
+        color: #66bb6a;
+        transition: transform 0.3s ease;
+    }
+    
+    .form-label:hover i {
+        transform: scale(1.2) rotate(10deg);
+    }
+    
+    /* Buttons */
+    .btn-lg {
+        padding: 14px 35px;
+        font-size: 1.1rem;
+        border-radius: 15px;
+        font-weight: 600;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #66bb6a 0%, #81c784 100%);
+        border: none;
+        box-shadow: 0 8px 25px rgba(102, 187, 106, 0.3);
+    }
+    
+    .btn-primary::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.4);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+        z-index: -1;
+    }
+    
+    .btn-primary:hover::before {
+        width: 400px;
+        height: 400px;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(102, 187, 106, 0.4);
+    }
+    
+    .btn-outline-secondary {
+        border: 2px solid #6c757d;
+        color: #6c757d;
+        background: transparent;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-secondary:hover {
+        background: #6c757d;
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(108, 117, 125, 0.3);
+    }
+    
+    /* Checkbox */
+    .form-check {
+        padding: 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    }
+    
+    .form-check:hover {
+        border-color: #81c784;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e8f5e9 100%);
+        box-shadow: 0 5px 15px rgba(129, 199, 132, 0.15);
+    }
+    
+    .form-check-input:checked {
+        background-color: #66bb6a;
+        border-color: #66bb6a;
+        box-shadow: 0 0 10px rgba(102, 187, 106, 0.3);
+    }
+    
+    .form-check-label {
+        cursor: pointer;
+        user-select: none;
+    }
+    
+    /* Info Cards */
+    .info-card {
+        background: white;
+        border-radius: 20px;
+        border: 2px solid transparent;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .info-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(129, 199, 132, 0.08), transparent);
+        transition: left 0.6s ease;
+    }
+    
+    .info-card:hover::before {
+        left: 100%;
+    }
+    
+    .info-card:hover {
+        transform: translateY(-10px) scale(1.03);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+        border-color: #81c784;
+    }
+    
+    .icon-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        font-size: 2rem;
+        position: relative;
+        animation: rotateIcon 10s linear infinite;
+    }
+    
+    @keyframes rotateIcon {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .icon-circle i {
+        animation: none;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .icon-warning {
+        background: linear-gradient(135deg, #ffc107 0%, #ff8800 100%);
+        box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4);
+        color: white;
+    }
+    
+    .icon-success {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+        color: white;
+    }
+    
+    .icon-primary {
+        background: linear-gradient(135deg, #64b5f6 0%, #90caf9 100%);
+        box-shadow: 0 8px 25px rgba(100, 181, 246, 0.3);
+        color: white;
+    }
+    
+    .phone-link {
+        color: #66bb6a;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .phone-link:hover {
+        color: #4caf50;
+        text-decoration: underline;
+    }
+    
+    /* Row spacing */
+    .row .col-md-6 {
+        margin-bottom: 1rem;
+    }
+    
+    /* Textarea */
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+    
+    /* Birthday section */
+    #birthday-name {
+        animation: slideDown 0.5s ease-out;
+    }
+    
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            max-height: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            max-height: 200px;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Add floating particles effect */
+    .container::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+            radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 40% 60%, rgba(118, 75, 162, 0.1) 0%, transparent 50%);
+        pointer-events: none;
+        z-index: -1;
+    }
+    
+    /* Form Error Messages */
+    .invalid-feedback {
+        color: #dc3545;
+        font-weight: 500;
+        padding: 8px 12px;
+        background: rgba(220, 53, 69, 0.1);
+        border-radius: 8px;
+        margin-top: 8px;
+        animation: shake 0.5s ease;
+    }
+    
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-10px); }
+        75% { transform: translateX(10px); }
+    }
+    
+    /* Input focused effect */
+    .input-focused {
+        animation: inputGlow 0.5s ease;
+    }
+    
+    @keyframes inputGlow {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.02); }
+        100% { transform: scale(1); }
+    }
+    
+    /* Birthday cake icon animation */
+    .fa-birthday-cake {
+        color: #ffc107;
+        animation: cakeBounce 2s ease-in-out infinite;
+    }
+    
+    @keyframes cakeBounce {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        25% { transform: translateY(-5px) rotate(-5deg); }
+        75% { transform: translateY(-5px) rotate(5deg); }
+    }
+    
+    /* Form sections */
+    .row {
+        position: relative;
+    }
+    
+    .row::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #667eea, transparent);
+        opacity: 0.3;
+    }
+    
+    /* Submit button extra effects */
+    button[type="submit"] {
+        position: relative;
+    }
+    
+    button[type="submit"]::after {
+        content: '→';
+        position: absolute;
+        right: 20px;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+    
+    button[type="submit"]:hover::after {
+        right: 15px;
+        opacity: 1;
+    }
+    
+    /* Main container background effect */
+    .container.py-5 {
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* Animated border for main card */
+    .form-card {
+        position: relative;
+    }
+    
+    .form-card::after {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(45deg, #a5d6a7, #c5e1a5, #dcedc8, #a5d6a7);
+        background-size: 300% 300%;
+        border-radius: 25px;
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        animation: gradientRotate 4s linear infinite;
+    }
+    
+    @keyframes gradientRotate {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    .form-card:hover::after {
+        opacity: 1;
+    }
+    
+    /* Special requests textarea */
+    textarea.form-control {
+        background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+        border: 2px dashed #e0e0e0;
+    }
+    
+    textarea.form-control:focus {
+        border-style: solid;
+        background: white;
+    }
+    
+    /* Guest Count Selector */
+    .guest-count-selector {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        padding: 20px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 20px;
+        box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .count-btn {
+        width: 50px;
+        height: 50px;
+        border: none;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #81c784 0%, #aed581 100%);
+        color: white;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        box-shadow: 0 5px 15px rgba(129, 199, 132, 0.25);
+    }
+    
+    .count-btn:hover {
+        transform: scale(1.2) rotate(90deg);
+        box-shadow: 0 8px 25px rgba(129, 199, 132, 0.35);
+    }
+    
+    .count-btn:active {
+        transform: scale(0.95) rotate(90deg);
+    }
+    
+    .count-display {
+        width: 100px;
+        height: 100px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15),
+                    inset 0 2px 10px rgba(102, 126, 234, 0.1);
+        border: 4px solid transparent;
+        background-clip: padding-box;
+        position: relative;
+    }
+    
+    .count-display::before {
+        content: '';
+        position: absolute;
+        top: -4px;
+        left: -4px;
+        right: -4px;
+        bottom: -4px;
+        background: linear-gradient(45deg, #a5d6a7, #c5e1a5, #dcedc8, #a5d6a7);
+        background-size: 300% 300%;
+        border-radius: 50%;
+        z-index: -1;
+        animation: gradientRotate 3s linear infinite;
+    }
+    
+    .count-display span {
+        font-size: 3rem;
+        font-weight: bold;
+        background: linear-gradient(135deg, #66bb6a 0%, #81c784 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    @keyframes numberPop {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.3); }
+    }
+    
+    /* Zone Selector Cards */
+    .zone-selector-card {
+        background: white;
+        border: 3px solid #e0e0e0;
+        border-radius: 20px;
+        padding: 25px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .zone-selector-card::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .zone-selector-card:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .zone-selector-card:hover {
+        transform: translateY(-10px) scale(1.05);
+        box-shadow: 0 15px 40px rgba(129, 199, 132, 0.2);
+        border-color: #81c784;
+    }
+    
+    .zone-selector-card.selected {
+        border-color: #66bb6a;
+        background: linear-gradient(135deg, #fff 0%, #e8f5e9 100%);
+        box-shadow: 0 10px 30px rgba(102, 187, 106, 0.25),
+                    inset 0 0 20px rgba(129, 199, 132, 0.08);
+    }
+    
+    .zone-icon {
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 15px;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
+        transition: all 0.3s ease;
+    }
+    
+    .vip-icon {
+        background: linear-gradient(135deg, #ffc107 0%, #ff8800 100%);
+        box-shadow: 0 8px 20px rgba(255, 193, 7, 0.4);
+        animation: crownRotate 4s ease-in-out infinite;
+    }
+    
+    @keyframes crownRotate {
+        0%, 100% { transform: rotate(0deg) scale(1); }
+        50% { transform: rotate(10deg) scale(1.1); }
+    }
+    
+    .zone-selector-card:hover .zone-icon {
+        transform: scale(1.2);
+    }
+    
+    .zone-title {
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 8px;
+    }
+    
+    .zone-description {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-bottom: 10px;
+    }
+    
+    .zone-check {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 1.5rem;
+        color: #66bb6a;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+    
+    .zone-selector-card.selected .zone-check {
+        opacity: 1;
+        animation: checkBounce 0.5s ease;
+    }
+    
+    @keyframes checkBounce {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.3); }
+    }
+    
+    /* Time Selector Grid */
+    .time-selector-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
+    
+    .time-card {
+        background: white;
+        border: 3px solid #e0e0e0;
+        border-radius: 15px;
+        padding: 20px 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .time-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.2), transparent);
+        transition: left 0.5s ease;
+    }
+    
+    .time-card:hover::before {
+        left: 100%;
+    }
+    
+    .time-card:hover {
+        transform: translateY(-8px) scale(1.05);
+        box-shadow: 0 10px 25px rgba(129, 199, 132, 0.2);
+        border-color: #81c784;
+    }
+    
+    .time-card.selected {
+        border-color: #66bb6a;
+        background: linear-gradient(135deg, #81c784 0%, #aed581 100%);
+        box-shadow: 0 10px 30px rgba(129, 199, 132, 0.35);
+        transform: translateY(-5px) scale(1.08);
+    }
+    
+    .time-card.selected .time-icon,
+    .time-card.selected .time-value,
+    .time-card.selected .time-period {
+        color: white;
+    }
+    
+    .time-icon {
+        font-size: 1.8rem;
+        color: #81c784;
+        margin-bottom: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .time-card:hover .time-icon {
+        transform: scale(1.2) rotate(360deg);
+    }
+    
+    .time-value {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+    }
+    
+    .time-period {
+        font-size: 0.75rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    @media (max-width: 768px) {
+        .time-selector-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    /* Date input special styling */
+    input[type="date"] {
+        position: relative;
+        background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+    
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        background: linear-gradient(135deg, #81c784 0%, #aed581 100%);
+        border-radius: 5px;
+        padding: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    input[type="date"]::-webkit-calendar-picker-indicator:hover {
+        transform: scale(1.2);
+    }
+</style>
+{% endblock %}
+

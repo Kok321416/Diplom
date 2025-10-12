@@ -1,0 +1,497 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Караоке - SkyBAR{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-danger mb-3">
+            <i class="fas fa-microphone me-3"></i>
+            КАРАОКЕ
+            <i class="fas fa-music ms-3"></i>
+        </h1>
+        <p class="lead text-muted">
+            Покажите свой талант! Выберите песню и встаньте в очередь
+        </p>
+    </div>
+
+    <div class="row">
+        <!-- Current Queue -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list-ol me-2"></i>
+                        Очередь караоке
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if queue %}
+                        <div class="queue-list">
+                            {% for entry in queue %}
+                            <div class="queue-item {% if entry.status == 'singing' %}currently-singing{% endif %}">
+                                <div class="row align-items-center">
+                                    <div class="col-md-1">
+                                        <div class="position-badge">
+                                            {% if entry.status == 'singing' %}
+                                                <i class="fas fa-microphone text-warning"></i>
+                                            {% else %}
+                                                {{ entry.position }}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="singer-info">
+                                            <strong>{{ entry.user.first_name }} {{ entry.user.last_name }}</strong>
+                                            {% if entry.status == 'singing' %}
+                                                <span class="badge bg-warning text-dark ms-2">Поет сейчас</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="song-info">
+                                            <i class="fas fa-music me-2 text-primary"></i>
+                                            {{ entry.display_song }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <small class="text-muted">
+                                            {{ entry.added_at|date:"H:i" }}
+                                        </small>
+                                    </div>
+                                    <div class="col-md-1">
+                                        {% if entry.user == user and entry.status == 'waiting' %}
+                                        <button class="btn btn-sm btn-outline-danger remove-song-btn" data-queue-id="{{ entry.id }}" title="Удалить">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-microphone-slash text-muted mb-3" style="font-size: 3rem;"></i>
+                            <h5 class="text-muted">Очередь пуста</h5>
+                            <p class="text-muted">Станьте первым в очереди!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Add to Queue -->
+        <div class="col-lg-4">
+            {% if user.is_authenticated %}
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-plus me-2"></i>
+                        Добавить в очередь
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="karaoke-form">
+                        {% csrf_token %}
+                        
+                        <!-- Song Selection Tabs -->
+                        <ul class="nav nav-tabs mb-3" id="songTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="popular-tab" data-bs-toggle="tab" data-bs-target="#popular" type="button">
+                                    Популярные
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button">
+                                    Все песни
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="custom-tab" data-bs-toggle="tab" data-bs-target="#custom" type="button">
+                                    Своя песня
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="songTabsContent">
+                            <!-- Popular Songs -->
+                            <div class="tab-pane fade show active" id="popular">
+                                <div class="song-list">
+                                    {% for song in popular_songs %}
+                                    <div class="song-item" data-song-id="{{ song.id }}">
+                                        <div class="song-title">{{ song.artist }} - {{ song.title }}</div>
+                                        <small class="text-muted">{{ song.duration|floatformat:0 }} сек</small>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- All Songs -->
+                            <div class="tab-pane fade" id="all">
+                                <div class="song-list">
+                                    {% for song in all_songs %}
+                                    <div class="song-item" data-song-id="{{ song.id }}">
+                                        <div class="song-title">{{ song.artist }} - {{ song.title }}</div>
+                                        <small class="text-muted">{{ song.duration|floatformat:0 }} сек</small>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Custom Song -->
+                            <div class="tab-pane fade" id="custom">
+                                <div class="mb-3">
+                                    <label for="custom_artist" class="form-label">Исполнитель</label>
+                                    <input type="text" class="form-control" id="custom_artist" placeholder="Например: Queen">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="custom_song_title" class="form-label">Название песни</label>
+                                    <input type="text" class="form-control" id="custom_song_title" placeholder="Например: Bohemian Rhapsody">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-danger btn-lg" id="add-to-queue-btn">
+                                <i class="fas fa-microphone me-2"></i>
+                                Встать в очередь
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- User Queue Status -->
+            {% if user.is_authenticated %}
+            <div class="card shadow-sm mt-3">
+                <div class="card-header bg-info text-white">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Информация
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2"><strong>Ваших песен в очереди:</strong> <span id="user-songs-count">0</span> / 3</p>
+                    <small class="text-muted">Вы можете добавить до 3 песен в очередь. Удаляйте свои песни кнопкой <i class="fas fa-times"></i> в списке очереди.</small>
+                </div>
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-lock text-muted mb-3" style="font-size: 3rem;"></i>
+                    <h5 class="text-muted">Войдите в систему</h5>
+                    <p class="text-muted">Для участия в караоке необходимо войти в систему</p>
+                    <a href="{% url 'login' %}" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt me-2"></i>
+                        Войти
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Popular Songs List -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-star me-2"></i>
+                        Популярные песни для караоке
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for song in popular_songs %}
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="popular-song-item">
+                                <div class="song-number">{{ forloop.counter }}</div>
+                                <div class="song-details">
+                                    <div class="song-title">{{ song.artist }} - {{ song.title }}</div>
+                                    <small class="text-muted">{{ song.duration|floatformat:0 }} сек</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('karaoke-form');
+    const addBtn = document.getElementById('add-to-queue-btn');
+    
+    let selectedSongId = null;
+    let isCustomSong = false;
+    
+    // Count user songs in queue
+    updateUserSongsCount();
+    
+    // Song selection
+    document.querySelectorAll('.song-item').forEach(item => {
+        item.addEventListener('click', function() {
+            // Remove previous selection
+            document.querySelectorAll('.song-item').forEach(i => i.classList.remove('selected'));
+            
+            // Select current item
+            this.classList.add('selected');
+            selectedSongId = this.dataset.songId;
+            isCustomSong = false;
+        });
+    });
+    
+    // Custom song tab
+    document.getElementById('custom-tab').addEventListener('click', function() {
+        selectedSongId = null;
+        isCustomSong = true;
+        document.querySelectorAll('.song-item').forEach(i => i.classList.remove('selected'));
+    });
+    
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (!selectedSongId && !isCustomSong) {
+            alert('Пожалуйста, выберите песню');
+            return;
+        }
+        
+        if (isCustomSong) {
+            const artist = document.getElementById('custom_artist').value.trim();
+            const title = document.getElementById('custom_song_title').value.trim();
+            
+            if (!artist || !title) {
+                alert('Пожалуйста, заполните поля исполнителя и названия песни');
+                return;
+            }
+            
+            addToQueue(null, artist, title);
+        } else {
+            addToQueue(selectedSongId, '', '');
+        }
+    });
+    
+    // Add to queue
+    function addToQueue(songId, artist, title) {
+        addBtn.disabled = true;
+        addBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Добавление...';
+        
+        const formData = new FormData();
+        formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+        
+        if (songId) {
+            formData.append('song_id', songId);
+        } else {
+            formData.append('custom_artist', artist);
+            formData.append('custom_song_title', title);
+        }
+        
+        fetch('/api/karaoke/add/', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('Ошибка: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Произошла ошибка при добавлении в очередь');
+        })
+        .finally(() => {
+            addBtn.disabled = false;
+            addBtn.innerHTML = '<i class="fas fa-microphone me-2"></i>Встать в очередь';
+        });
+    }
+    
+    // Remove song from queue
+    document.querySelectorAll('.remove-song-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const queueId = this.dataset.queueId;
+            
+            if (confirm('Вы уверены, что хотите удалить эту песню из очереди?')) {
+                const formData = new FormData();
+                formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+                formData.append('queue_id', queueId);
+                
+                fetch('/api/karaoke/remove/', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert('Ошибка: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Произошла ошибка при удалении из очереди');
+                });
+            }
+        });
+    });
+    
+    // Update user songs count
+    function updateUserSongsCount() {
+        const userSongsCountElement = document.getElementById('user-songs-count');
+        if (userSongsCountElement) {
+            const count = document.querySelectorAll('.remove-song-btn').length;
+            userSongsCountElement.textContent = count;
+        }
+    }
+    
+    // Auto-refresh queue every 30 seconds
+    setInterval(function() {
+        if (document.visibilityState === 'visible') {
+            location.reload();
+        }
+    }, 30000);
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .queue-item {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        transition: all 0.3s ease;
+    }
+    
+    .queue-item:last-child {
+        border-bottom: none;
+    }
+    
+    .queue-item.currently-singing {
+        background: linear-gradient(90deg, #fff3cd, #fff);
+        border-left: 4px solid #ffc107;
+    }
+    
+    .position-badge {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #dc3545;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+    
+    .song-item {
+        padding: 10px;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .song-item:hover {
+        border-color: #dc3545;
+        background-color: #f8f9fa;
+    }
+    
+    .song-item.selected {
+        border-color: #dc3545;
+        background-color: #fff5f5;
+    }
+    
+    .song-title {
+        font-weight: 500;
+        color: #333;
+    }
+    
+    .popular-song-item {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        background: #f8f9fa;
+    }
+    
+    .song-number {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: #dc3545;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+    
+    .song-details {
+        flex: 1;
+    }
+    
+    .card {
+        border: none;
+        border-radius: 15px;
+    }
+    
+    .card-header {
+        border-radius: 15px 15px 0 0 !important;
+    }
+    
+    .btn-lg {
+        padding: 12px 30px;
+        font-size: 1.1rem;
+        border-radius: 10px;
+    }
+    
+    .nav-tabs .nav-link {
+        border-radius: 8px 8px 0 0;
+    }
+    
+    .nav-tabs .nav-link.active {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        color: white;
+    }
+    
+    .remove-song-btn {
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+    
+    .remove-song-btn:hover {
+        background-color: #dc3545;
+        color: white;
+        transform: scale(1.1);
+    }
+</style>
+{% endblock %}
+
