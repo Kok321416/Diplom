@@ -7,13 +7,34 @@ from django.views.decorators.http import require_http_methods
 from django.utils import timezone
 from django.db import transaction
 from datetime import timedelta
-from .models import User, Table, Seat, Reservation, BookingPreferences, Song, KaraokeQueue, Event
-from .forms import CustomUserCreationForm, BookingPreferencesForm, ReservationForm, DirectReservationForm, EventForm
+from .models import User, Table, Seat, Reservation, BookingPreferences, Song, KaraokeQueue, Event, SiteContent, TeamMember, ContactMessage
+from .forms import CustomUserCreationForm, BookingPreferencesForm, ReservationForm, DirectReservationForm, EventForm, ContactForm
 
 
 def home(request):
     """Главная страница"""
-    return render(request, 'restaurant/home.html')
+    # Получаем контент из админки
+    hero_content = SiteContent.objects.filter(content_type='hero', is_active=True).first()
+    services_content = SiteContent.objects.filter(content_type='services', is_active=True).first()
+    contact_content = SiteContent.objects.filter(content_type='contact', is_active=True).first()
+    
+    # Форма обратной связи
+    if request.method == 'POST':
+        contact_form = ContactForm(request.POST)
+        if contact_form.is_valid():
+            contact_form.save()
+            messages.success(request, 'Спасибо за ваше сообщение! Мы свяжемся с вами в ближайшее время.')
+            return redirect('home')
+    else:
+        contact_form = ContactForm()
+    
+    context = {
+        'hero_content': hero_content,
+        'services_content': services_content,
+        'contact_content': contact_content,
+        'contact_form': contact_form,
+    }
+    return render(request, 'restaurant/home.html', context)
 
 
 def booking_choice(request):
@@ -548,3 +569,15 @@ def my_events(request):
     """Мои мероприятия"""
     events = Event.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'restaurant/my_events.html', {'events': events})
+
+
+def about(request):
+    """Страница О ресторане"""
+    about_content = SiteContent.objects.filter(content_type='about', is_active=True).first()
+    team_members = TeamMember.objects.filter(is_active=True).order_by('order', 'name')
+    
+    context = {
+        'about_content': about_content,
+        'team_members': team_members,
+    }
+    return render(request, 'restaurant/about.html', context)

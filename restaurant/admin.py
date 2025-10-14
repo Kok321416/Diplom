@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, Table, Seat, Reservation, BookingPreferences, Song, KaraokeQueue, Event
+from .models import User, Table, Seat, Reservation, BookingPreferences, Song, KaraokeQueue, Event, SiteContent, TeamMember, ContactMessage
 
 
 @admin.register(User)
@@ -97,3 +97,54 @@ class EventAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+
+
+@admin.register(SiteContent)
+class SiteContentAdmin(admin.ModelAdmin):
+    list_display = ('content_type', 'title', 'is_active', 'updated_at')
+    list_filter = ('content_type', 'is_active')
+    search_fields = ('title', 'description')
+    readonly_fields = ('created_at', 'updated_at')
+    
+    fieldsets = (
+        ('Основная информация', {
+            'fields': ('content_type', 'title', 'subtitle', 'description', 'image', 'is_active')
+        }),
+        ('Системная информация', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+
+@admin.register(TeamMember)
+class TeamMemberAdmin(admin.ModelAdmin):
+    list_display = ('name', 'position', 'order', 'is_active')
+    list_filter = ('is_active', 'position')
+    search_fields = ('name', 'position', 'bio')
+    ordering = ('order', 'name')
+    
+    fieldsets = (
+        ('Основная информация', {
+            'fields': ('name', 'position', 'bio', 'photo', 'order', 'is_active')
+        }),
+    )
+
+
+@admin.register(ContactMessage)
+class ContactMessageAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email', 'subject', 'created_at', 'is_read')
+    list_filter = ('is_read', 'created_at')
+    search_fields = ('name', 'email', 'subject', 'message')
+    ordering = ('-created_at',)
+    readonly_fields = ('created_at',)
+    
+    actions = ['mark_as_read', 'mark_as_unread']
+    
+    def mark_as_read(self, request, queryset):
+        queryset.update(is_read=True)
+    mark_as_read.short_description = "Отметить как прочитанное"
+    
+    def mark_as_unread(self, request, queryset):
+        queryset.update(is_read=False)
+    mark_as_unread.short_description = "Отметить как непрочитанное"
