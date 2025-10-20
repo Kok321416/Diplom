@@ -5,331 +5,392 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="about-hero position-relative text-white" style="
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%),
-                url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920&q=80') center/cover;
-    padding: 120px 0 80px 0;
-">
+<section class="hero-section-about">
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 mx-auto text-center">
-                {% if about_content %}
-                    <h1 class="display-3 fw-bold mb-4" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.3);">
-                        {{ about_content.title }}
-                    </h1>
-                    {% if about_content.subtitle %}
-                        <p class="lead fs-3 mb-4" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.3);">
-                            {{ about_content.subtitle }}
-                        </p>
+            <div class="col-12">
+                {% if page_content %}
+                    <h1 class="display-4 fw-bold mb-3" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.3);">{{ page_content.title }}</h1>
+                    {% if page_content.subtitle %}
+                        <p class="lead fs-3" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.3);">{{ page_content.subtitle }}</p>
                     {% endif %}
                 {% else %}
-                    <h1 class="display-3 fw-bold mb-4" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.3);">
-                        О SkyBAR
-                    </h1>
-                    <p class="lead fs-3 mb-4" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.3);">
-                        Место встречи программистов
-                    </p>
+                    <h1 class="display-4 fw-bold mb-3" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.3);">О ресторане SkyBAR</h1>
+                    <p class="lead fs-3" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.3);">Уникальное место для программистов и IT-специалистов</p>
                 {% endif %}
             </div>
         </div>
     </div>
 </section>
 
-<!-- About Content Section -->
-<section class="py-5">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="card border-0 shadow-sm mb-5">
-                    <div class="card-body p-5">
-                        {% if about_content %}
-                            <div class="about-description">
-                                {{ about_content.description|linebreaks }}
-                            </div>
-                        {% else %}
-                            <h2 class="fw-bold mb-4">Наша история</h2>
-                            <p class="text-muted fs-5 mb-4">
-                                SkyBAR был создан в 2024 году группой программистов, которые мечтали о месте, 
-                                где IT-сообщество могло бы собираться не только для работы, но и для отдыха. 
-                                Мы понимаем уникальные потребности разработчиков, инженеров и всех, кто связан с технологиями.
-                            </p>
-                            <p class="text-muted fs-5 mb-4">
-                                Наше пространство оснащено всем необходимым: быстрым интернетом, удобными рабочими местами, 
-                                розетками у каждого стола и зонами для проведения встреч. При этом мы не забываем о главном — 
-                                отличной кухне и напитках, которые помогают создавать лучший код.
-                            </p>
-                            
-                            <h2 class="fw-bold mb-4 mt-5">Наша миссия</h2>
-                            <p class="text-muted fs-5 mb-4">
-                                Создать комфортное пространство, где технологии встречаются с гастрономией, 
-                                а программисты могут работать, общаться и отдыхать в атмосфере взаимопонимания и поддержки.
-                            </p>
-                            
-                            <h2 class="fw-bold mb-4 mt-5">Наши ценности</h2>
-                            <div class="row g-4">
-                                <div class="col-md-6">
-                                    <div class="d-flex align-items-start">
-                                        <div class="bg-primary bg-gradient rounded-circle p-3 me-3">
-                                            <i class="fas fa-code text-white fs-4"></i>
-                                        </div>
-                                        <div>
-                                            <h5 class="fw-bold mb-2">Технологии</h5>
-                                            <p class="text-muted mb-0">
-                                                Мы всегда в курсе последних тенденций и стремимся создать среду, 
-                                                где технологии — это образ жизни.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="d-flex align-items-start">
-                                        <div class="bg-success bg-gradient rounded-circle p-3 me-3">
-                                            <i class="fas fa-users text-white fs-4"></i>
-                                        </div>
-                                        <div>
-                                            <h5 class="fw-bold mb-2">Сообщество</h5>
-                                            <p class="text-muted mb-0">
-                                                Мы верим в силу сообщества и создаем пространство для нетворкинга 
-                                                и обмена опытом.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="d-flex align-items-start">
-                                        <div class="bg-warning bg-gradient rounded-circle p-3 me-3">
-                                            <i class="fas fa-star text-white fs-4"></i>
-                                        </div>
-                                        <div>
-                                            <h5 class="fw-bold mb-2">Качество</h5>
-                                            <p class="text-muted mb-0">
-                                                От кода до кухни — мы стремимся к совершенству во всём, что делаем.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="d-flex align-items-start">
-                                        <div class="bg-info bg-gradient rounded-circle p-3 me-3">
-                                            <i class="fas fa-heart text-white fs-4"></i>
-                                        </div>
-                                        <div>
-                                            <h5 class="fw-bold mb-2">Комфорт</h5>
-                                            <p class="text-muted mb-0">
-                                                Ваш комфорт — наш приоритет. Мы создали место, где вы можете быть собой.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+<div class="container py-5">
 
-<!-- Team Section -->
-{% if team_members %}
-<section class="bg-light py-5">
-    <div class="container">
-        <div class="row mb-5">
-            <div class="col-12 text-center">
-                <h2 class="display-5 fw-bold mb-3">Наша команда</h2>
-                <p class="lead text-muted">
-                    Познакомьтесь с людьми, которые делают SkyBAR особенным местом
-                </p>
-            </div>
-        </div>
-        <div class="row g-4">
-            {% for member in team_members %}
-            <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-sm team-card">
-                    {% if member.photo %}
-                    <img src="{{ member.photo.url }}" class="card-img-top" alt="{{ member.name }}" style="height: 300px; object-fit: cover;">
+    <!-- История ресторана -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="section-card">
+                <div class="card-body p-5">
+                    <h2 class="h3 text-primary mb-4">
+                        <i class="fas fa-history me-2"></i>
+                        Наша история
+                    </h2>
+                    {% if page_content and page_content.history %}
+                        <div class="content-text">
+                            {{ page_content.history|linebreaks }}
+                        </div>
                     {% else %}
-                    <div class="bg-gradient d-flex align-items-center justify-content-center" style="height: 300px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                        <i class="fas fa-user text-white" style="font-size: 5rem;"></i>
-                    </div>
+                        <div class="content-text">
+                            <p>SkyBAR был основан в 2020 году группой энтузиастов из IT-сферы, которые мечтали создать место, где программисты могли бы не только вкусно поесть, но и найти единомышленников, обменяться опытом и просто хорошо провести время.</p>
+                            
+                            <p>Идея создания ресторана родилась из понимания того, что IT-специалисты часто работают в ненормированном режиме, и им нужно место, где можно поужинать поздно вечером, встретиться с коллегами или просто отдохнуть после тяжелого рабочего дня.</p>
+                            
+                            <p>За годы работы SkyBAR стал не просто рестораном, а настоящим сообществом, где собираются разработчики, дизайнеры, менеджеры проектов и все, кто связан с миром технологий.</p>
+                        </div>
                     {% endif %}
-                    <div class="card-body text-center p-4">
-                        <h5 class="card-title fw-bold mb-1">{{ member.name }}</h5>
-                        <p class="text-primary mb-3">{{ member.position }}</p>
-                        <p class="card-text text-muted">{{ member.bio }}</p>
-                    </div>
                 </div>
             </div>
-            {% endfor %}
         </div>
     </div>
-</section>
-{% endif %}
 
-<!-- Features Grid -->
-<section class="py-5">
-    <div class="container">
-        <div class="row mb-5">
-            <div class="col-12 text-center">
-                <h2 class="display-5 fw-bold mb-3">Что мы предлагаем</h2>
-                <p class="lead text-muted">Всё для комфортной работы и отдыха</p>
-            </div>
-        </div>
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm feature-card">
-                    <div class="card-body text-center p-4">
-                        <div class="bg-primary bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                            <i class="fas fa-wifi text-white fs-2"></i>
+    <!-- Создатель -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="section-card">
+                <div class="card-body p-5">
+                    <h2 class="h3 text-primary mb-4">
+                        <i class="fas fa-user-tie me-2"></i>
+                        Создатель проекта
+                    </h2>
+                    <div class="row align-items-center">
+                        <div class="col-md-4 text-center mb-4 mb-md-0">
+                            <div class="creator-photo">
+                                <img src="{% static 'images/team/photo_2023-10-10_11-25-31.jpg' %}" 
+                                     alt="Андриевский Артем Александрович" 
+                                     class="rounded-circle img-fluid" 
+                                     style="width: 200px; height: 200px; object-fit: cover; border: 4px solid #0d6efd; box-shadow: 0 8px 25px rgba(0,0,0,0.15);">
+                            </div>
                         </div>
-                        <h5 class="card-title fw-bold mb-3">Быстрый Wi-Fi</h5>
-                        <p class="card-text text-muted">
-                            Стабильное соединение 500 Мбит/с для комфортной работы и видеоконференций
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm feature-card">
-                    <div class="card-body text-center p-4">
-                        <div class="bg-success bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                            <i class="fas fa-plug text-white fs-2"></i>
+                        <div class="col-md-8">
+                            <h3 class="h4 text-primary mb-3">Андриевский Артем Александрович</h3>
+                            <p class="lead text-muted mb-3">Главный разработчик и создатель SkyBAR</p>
+                            
+                            <div class="creator-info">
+                                <p class="mb-3">Андриевский Артем Александрович - талантливый full-stack разработчик, который воплотил в жизнь идею создания уникального IT-тематического ресторана SkyBAR. Его страсть к технологиям и кулинарии объединились в этом инновационном проекте.</p>
+                                
+                                <p class="mb-3">Артем специализируется на современных веб-технологиях, включая Django, React, и других передовых фреймворках. Его опыт в разработке и глубокое понимание потребностей IT-сообщества позволили создать платформу, которая идеально подходит для бронирования столов и организации мероприятий.</p>
+                                
+                                <div class="creator-skills mb-4">
+                                    <h5 class="h6 text-primary mb-2">Технические навыки:</h5>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <span class="badge bg-primary">Python/Django</span>
+                                        <span class="badge bg-primary">JavaScript/React</span>
+                                        <span class="badge bg-primary">PostgreSQL</span>
+                                        <span class="badge bg-primary">Docker</span>
+                                        <span class="badge bg-primary">Bootstrap</span>
+                                        <span class="badge bg-primary">Git</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="creator-contact">
+                                    <a href="https://t.me/andrievskypsy" target="_blank" class="btn btn-outline-primary me-2">
+                                        <i class="fab fa-telegram me-1"></i>
+                                        @andrievskypsy
+                                    </a>
+                                    <a href="mailto:andrievskypsy@example.com" class="btn btn-outline-secondary">
+                                        <i class="fas fa-envelope me-1"></i>
+                                        Email
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                        <h5 class="card-title fw-bold mb-3">Розетки везде</h5>
-                        <p class="card-text text-muted">
-                            У каждого стола есть розетки для ноутбуков и зарядки устройств
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm feature-card">
-                    <div class="card-body text-center p-4">
-                        <div class="bg-warning bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                            <i class="fas fa-utensils text-white fs-2"></i>
-                        </div>
-                        <h5 class="card-title fw-bold mb-3">Отличная кухня</h5>
-                        <p class="card-text text-muted">
-                            Вкусная и здоровая еда, специальное меню для программистов
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm feature-card">
-                    <div class="card-body text-center p-4">
-                        <div class="bg-info bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                            <i class="fas fa-door-closed text-white fs-2"></i>
-                        </div>
-                        <h5 class="card-title fw-bold mb-3">Приватные зоны</h5>
-                        <p class="card-text text-muted">
-                            Отдельные помещения для встреч команд и конфиденциальных переговоров
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm feature-card">
-                    <div class="card-body text-center p-4">
-                        <div class="bg-danger bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                            <i class="fas fa-microphone text-white fs-2"></i>
-                        </div>
-                        <h5 class="card-title fw-bold mb-3">Караоке</h5>
-                        <p class="card-text text-muted">
-                            Отдохните после работы — спойте любимые песни с коллегами
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm feature-card">
-                    <div class="card-body text-center p-4">
-                        <div class="bg-secondary bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                            <i class="fas fa-calendar text-white fs-2"></i>
-                        </div>
-                        <h5 class="card-title fw-bold mb-3">Мероприятия</h5>
-                        <p class="card-text text-muted">
-                            Организуем встречи, хакатоны, дни рождения и корпоративы до 50 человек
-                        </p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</section>
 
-<!-- CTA Section -->
-{% if user.is_authenticated %}
-<section class="cta-section text-white py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <h3 class="fw-bold mb-3">Готовы посетить нас?</h3>
-                <p class="lead mb-0">
-                    Забронируйте стол прямо сейчас и станьте частью нашего сообщества!
-                </p>
-            </div>
-            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                <a href="{% url 'booking_choice' %}" class="btn btn-warning btn-lg px-5 shadow">
-                    <i class="fas fa-calendar-check me-2"></i>
-                    Забронировать стол
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
-{% else %}
-<section class="cta-section text-white py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <h3 class="fw-bold mb-3">Присоединяйтесь к нам!</h3>
-                <p class="lead mb-0">
-                    Зарегистрируйтесь, чтобы бронировать столы и получить доступ ко всем возможностям
-                </p>
-            </div>
-            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                <a href="{% url 'register' %}" class="btn btn-warning btn-lg px-5 shadow">
-                    <i class="fas fa-user-plus me-2"></i>
-                    Регистрация
-                </a>
+    <!-- Миссия и ценности -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="section-card">
+                <div class="card-body p-5">
+                    <h2 class="h3 text-primary mb-4">
+                        <i class="fas fa-heart me-2"></i>
+                        Миссия и ценности
+                    </h2>
+                    {% if page_content and page_content.mission %}
+                        <div class="content-text">
+                            {{ page_content.mission|linebreaks }}
+                        </div>
+                    {% else %}
+                        <div class="content-text">
+                            <p><strong>Наша миссия:</strong> Создать уникальное пространство, где IT-сообщество может собираться, общаться, делиться знаниями и просто наслаждаться качественной едой и напитками.</p>
+                            
+                            <p><strong>Наши ценности:</strong></p>
+                            <ul>
+                                <li><strong>Инновации</strong> - мы всегда ищем новые способы улучшить опыт наших гостей</li>
+                                <li><strong>Сообщество</strong> - мы верим в силу объединения людей с общими интересами</li>
+                                <li><strong>Качество</strong> - мы используем только лучшие ингредиенты и технологии</li>
+                                <li><strong>Открытость</strong> - мы приветствуем всех, независимо от уровня опыта в программировании</li>
+                                <li><strong>Креативность</strong> - мы поощряем творческий подход во всем</li>
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
-</section>
-{% endif %}
+
+    <!-- Команда -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="section-card">
+                <div class="card-body p-5">
+                    <h2 class="h3 text-primary mb-4">
+                        <i class="fas fa-users me-2"></i>
+                        Наша команда
+                    </h2>
+                    {% if page_content and page_content.team %}
+                        <div class="content-text">
+                            {{ page_content.team|linebreaks }}
+                        </div>
+                    {% else %}
+                        <div class="content-text">
+                            <p>Наша команда состоит из талантливых людей, которые разделяют любовь к технологиям и качественному сервису:</p>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-4">
+                                    <div class="team-member">
+                                        <div class="member-photo mb-3">
+                                            <img src="{% static 'images/team/photo_2023-10-10_11-25-31.jpg' %}" 
+                                                 alt="Андриевский Артем Александрович" 
+                                                 class="rounded-circle img-fluid" 
+                                                 style="width: 120px; height: 120px; object-fit: cover; border: 4px solid #0d6efd; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                                        </div>
+                                        <h5>Андриевский Артем Александрович</h5>
+                                        <p class="text-muted">Главный разработчик</p>
+                                        <small>Full-stack разработчик, создатель SkyBAR</small>
+                                        <div class="mt-2">
+                                            <a href="https://t.me/andrievskypsy" target="_blank" class="btn btn-outline-primary btn-sm">
+                                                <i class="fab fa-telegram me-1"></i>
+                                                @andrievskypsy
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-4">
+                                    <div class="team-member">
+                                        <div class="icon">
+                                            <i class="fas fa-utensils"></i>
+                                        </div>
+                                        <h5>Мария Сидорова</h5>
+                                        <p class="text-muted">Шеф-повар</p>
+                                        <small>Специализируется на фьюжн-кухне и IT-тематических блюдах</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-4">
+                                    <div class="team-member">
+                                        <div class="icon">
+                                            <i class="fas fa-users"></i>
+                                        </div>
+                                        <h5>Дмитрий Козлов</h5>
+                                        <p class="text-muted">Менеджер зала</p>
+                                        <small>Организует мероприятия и следит за комфортом гостей</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="cta-section">
+                <h3 class="mb-3">Присоединяйтесь к нашему сообществу!</h3>
+                <p class="lead mb-4">SkyBAR - это больше чем ресторан, это место встреч IT-сообщества</p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="{% url 'booking_choice' %}" class="btn btn-light btn-lg">
+                        <i class="fas fa-calendar-plus me-2"></i>
+                        Забронировать стол
+                    </a>
+                    <a href="{% url 'karaoke' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-microphone me-2"></i>
+                        Караоке
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_css %}
 <style>
-    .about-hero {
+    .content-text {
+        line-height: 1.8;
+        font-size: 1.1rem;
+    }
+    
+    .content-text p {
+        margin-bottom: 1.5rem;
+    }
+    
+    .content-text ul {
+        padding-left: 2rem;
+    }
+    
+    .content-text li {
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Специальные стили для страницы "О ресторане" */
+    .hero-section-about {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 4rem 0;
+        text-align: center;
         position: relative;
         overflow: hidden;
     }
     
-    .team-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    .hero-section-about::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=1920&q=80') center/cover;
+        opacity: 0.2;
+        z-index: 1;
     }
     
-    .team-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+    .hero-section-about .container {
+        position: relative;
+        z-index: 2;
     }
     
-    .feature-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    .section-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: var(--box-shadow);
+        border: none;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 2rem;
     }
     
-    .feature-card:hover {
+    .section-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient-primary);
+    }
+    
+    .section-card:hover {
+        box-shadow: var(--box-shadow-hover);
+        transform: translateY(-2px);
+    }
+    
+    .team-member {
+        text-align: center;
+        padding: 1.5rem;
+        background: white;
+        border-radius: 15px;
+        box-shadow: var(--box-shadow);
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+    
+    .team-member:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+        box-shadow: var(--box-shadow-hover);
+        border-color: var(--primary-blue);
     }
     
-    .about-description {
-        font-size: 1.1rem;
-        line-height: 1.8;
-        color: #6c757d;
+    .team-member .icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--gradient-primary);
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        font-size: 2rem;
+    }
+    
+    .member-photo {
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    
+    .member-photo img {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .member-photo img:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(13, 110, 253, 0.3) !important;
+    }
+    
+    /* Стили для секции создателя */
+    .creator-photo {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .creator-photo img {
+        transition: all 0.3s ease;
+    }
+    
+    .creator-photo img:hover {
+        transform: scale(1.05);
+        box-shadow: 0 12px 30px rgba(13, 110, 253, 0.4) !important;
+    }
+    
+    .creator-info {
+        line-height: 1.7;
+    }
+    
+    .creator-skills .badge {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    
+    .creator-contact .btn {
+        border-radius: 25px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .creator-contact .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .cta-section {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 3rem 0;
+        text-align: center;
+        border-radius: 15px;
+        margin-top: 2rem;
+    }
+    
+    .cta-section .btn {
+        margin: 0.5rem;
     }
 </style>
 {% endblock %}
-

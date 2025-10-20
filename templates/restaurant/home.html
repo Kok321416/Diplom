@@ -18,12 +18,20 @@
                 <div class="col-lg-6 mb-5 mb-lg-0">
                     <h1 class="display-2 fw-bold mb-4" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.3);">
                         <i class="fas fa-code me-3 text-warning"></i>
-                        <span class="text-warning">Sky</span><span class="text-white">BAR</span>
+                        {% if page_content %}
+                            <span class="text-warning">{{ page_content.title|slice:":3" }}</span><span class="text-white">{{ page_content.title|slice:"3:" }}</span>
+                        {% else %}
+                            <span class="text-warning">Sky</span><span class="text-white">BAR</span>
+                        {% endif %}
                     </h1>
                     <p class="lead mb-4 fs-3" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.3);">
-                        Уникальное место, где собираются те, кто любит программирование. 
-                        Здесь вы можете не только насладиться отличной кухней, но и обсудить 
-                        последние технологии, поделиться опытом и найти единомышленников.
+                        {% if page_content and page_content.description %}
+                            {{ page_content.description }}
+                        {% else %}
+                            Уникальное место, где собираются те, кто любит программирование. 
+                            Здесь вы можете не только насладиться отличной кухней, но и обсудить 
+                            последние технологии, поделиться опытом и найти единомышленников.
+                        {% endif %}
                     </p>
                     <div class="d-flex flex-wrap gap-3 mb-4">
                         {% if user.is_authenticated %}
@@ -86,6 +94,41 @@
                             <i class="fas fa-music ms-2"></i>
                         </a>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Bar Zone Announcement -->
+<section class="py-5 bg-warning">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="d-flex align-items-center">
+                    <div class="announcement-icon me-4">
+                        <i class="fas fa-wine-glass-alt fa-3x text-dark"></i>
+                    </div>
+                    <div>
+                        <h2 class="h3 text-dark mb-2 fw-bold">
+                            <i class="fas fa-bullhorn me-2"></i>
+                            Важное объявление!
+                        </h2>
+                        <p class="lead text-dark mb-0">
+                            <strong>Барная зона доступна для всех посетителей!</strong><br>
+                            <span class="fs-5">Не забронировали стол? Не беда! Приходите в нашу барную зону - 
+                            здесь всегда найдется место для вас. Наслаждайтесь напитками и закусками 
+                            в уютной атмосфере без предварительного бронирования.</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center mt-4 mt-lg-0">
+                <div class="bar-info-card bg-dark text-white p-4 rounded-3 shadow-lg">
+                    <i class="fas fa-clock fa-2x text-warning mb-3"></i>
+                    <h5 class="fw-bold">Режим работы бара</h5>
+                    <p class="mb-2"><strong>Ежедневно:</strong> 18:00 - 02:00</p>
+                    <p class="mb-0"><strong>Happy Hour:</strong> 18:00 - 20:00</p>
                 </div>
             </div>
         </div>
@@ -320,6 +363,32 @@
 
 {% block extra_css %}
 <style>
+    /* Bar Zone Announcement Styles */
+    .announcement-icon {
+        animation: bounce 2s infinite;
+    }
+    
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {
+            transform: translateY(0);
+        }
+        40% {
+            transform: translateY(-10px);
+        }
+        60% {
+            transform: translateY(-5px);
+        }
+    }
+    
+    .bar-info-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .bar-info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
+    }
+    
     .hero-section {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         min-height: 100vh;

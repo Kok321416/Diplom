@@ -1,0 +1,233 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | SkyBAR Admin{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">
+        <i class="fas fa-code me-2"></i>
+        SkyBAR Admin
+    </a>
+</h1>
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'admin/css/custom_admin.css' %}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<style>
+    body.admin {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+    
+    #header {
+        background: linear-gradient(135deg, #0d6efd 0%, #6f42c1 50%, #dc3545 100%);
+        color: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    #header h1 {
+        color: white;
+        font-weight: bold;
+    }
+    
+    #header h1 a:link, #header h1 a:visited {
+        color: white;
+    }
+    
+    .module {
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .module:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px);
+    }
+    
+    .module h2 {
+        background: linear-gradient(135deg, #0d6efd 0%, #6f42c1 50%, #dc3545 100%);
+        color: white;
+        margin: 0;
+        padding: 15px 20px;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    
+    .default, input[type=submit], input[type=button], .submit-row input, a.button {
+        background: linear-gradient(135deg, #0d6efd 0%, #6f42c1 50%, #dc3545 100%);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: bold;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .default:hover, input[type=submit]:hover, input[type=button]:hover, .submit-row input:hover, a.button:hover {
+        background: linear-gradient(135deg, #0b5ed7 0%, #5a32a3 50%, #c82333 100%);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .form-row {
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border-left: 4px solid #0d6efd;
+    }
+    
+    .form-row label {
+        font-weight: bold;
+        color: #495057;
+        margin-bottom: 5px;
+        display: block;
+    }
+    
+    .form-row input, .form-row select, .form-row textarea {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #e9ecef;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-row input:focus, .form-row select:focus, .form-row textarea:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+        outline: none;
+    }
+    
+    .results table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .results th {
+        background: linear-gradient(135deg, #0d6efd 0%, #6f42c1 50%, #dc3545 100%);
+        color: white;
+        padding: 12px 15px;
+        font-weight: bold;
+        text-align: left;
+        border: none;
+    }
+    
+    .results td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #e9ecef;
+        vertical-align: middle;
+    }
+    
+    .results tr:hover {
+        background: #f8f9fa;
+    }
+    
+    .results tr:nth-child(even) {
+        background: #f8f9fa;
+    }
+    
+    #changelist-filter {
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-right: 20px;
+    }
+    
+    #changelist-filter h2 {
+        background: linear-gradient(135deg, #0d6efd 0%, #6f42c1 50%, #dc3545 100%);
+        color: white;
+        margin: -20px -20px 20px -20px;
+        padding: 15px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 8px 8px 0 0;
+    }
+    
+    #changelist-filter h3 {
+        color: #495057;
+        font-size: 14px;
+        font-weight: bold;
+        margin: 20px 0 10px 0;
+        padding-bottom: 5px;
+        border-bottom: 2px solid #e9ecef;
+    }
+    
+    #changelist-filter ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    #changelist-filter li {
+        margin-bottom: 5px;
+    }
+    
+    #changelist-filter a {
+        color: #495057;
+        text-decoration: none;
+        padding: 8px 12px;
+        display: block;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+    }
+    
+    #changelist-filter a:hover {
+        background: #e9ecef;
+        color: #0d6efd;
+    }
+    
+    #changelist-filter a.selected {
+        background: linear-gradient(135deg, #0d6efd 0%, #6f42c1 50%, #dc3545 100%);
+        color: white;
+    }
+    
+    .messagelist {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 20px 0;
+    }
+    
+    .messagelist li {
+        padding: 15px 20px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        font-weight: bold;
+    }
+    
+    .messagelist .success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    
+    .messagelist .warning {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+    }
+    
+    .messagelist .error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+</style>
+{% endblock %}

@@ -7,16 +7,14 @@ from django.views.decorators.http import require_http_methods
 from django.utils import timezone
 from django.db import transaction
 from datetime import timedelta
-from .models import User, Table, Seat, Reservation, BookingPreferences, Song, KaraokeQueue, Event, SiteContent, TeamMember, ContactMessage
+from .models import User, Table, Seat, Reservation, BookingPreferences, Song, KaraokeQueue, Event, PageContent, ContactMessage
 from .forms import CustomUserCreationForm, BookingPreferencesForm, ReservationForm, DirectReservationForm, EventForm, ContactForm
 
 
 def home(request):
     """Главная страница"""
     # Получаем контент из админки
-    hero_content = SiteContent.objects.filter(content_type='hero', is_active=True).first()
-    services_content = SiteContent.objects.filter(content_type='services', is_active=True).first()
-    contact_content = SiteContent.objects.filter(content_type='contact', is_active=True).first()
+    page_content = PageContent.objects.filter(page='home', is_active=True).first()
     
     # Форма обратной связи
     if request.method == 'POST':
@@ -29,12 +27,20 @@ def home(request):
         contact_form = ContactForm()
     
     context = {
-        'hero_content': hero_content,
-        'services_content': services_content,
-        'contact_content': contact_content,
+        'page_content': page_content,
         'contact_form': contact_form,
     }
     return render(request, 'restaurant/home.html', context)
+
+
+def about(request):
+    """Страница 'О ресторане'"""
+    page_content = PageContent.objects.filter(page='about', is_active=True).first()
+    
+    context = {
+        'page_content': page_content,
+    }
+    return render(request, 'restaurant/about.html', context)
 
 
 def booking_choice(request):
@@ -327,7 +333,7 @@ def reservation_confirmation(request, reservation_id):
                 seat.is_available = False
                 seat.save()
         
-        messages.success(request, 'Бронирование подтверждено и оплачено!')
+        messages.success(request, 'Бронирование подтверждено!')
         return redirect('reservation_success', reservation_id=reservation.id)
     
     return render(request, 'restaurant/reservation_confirmation.html', {
@@ -573,11 +579,9 @@ def my_events(request):
 
 def about(request):
     """Страница О ресторане"""
-    about_content = SiteContent.objects.filter(content_type='about', is_active=True).first()
-    team_members = TeamMember.objects.filter(is_active=True).order_by('order', 'name')
+    page_content = PageContent.objects.filter(page='about', is_active=True).first()
     
     context = {
-        'about_content': about_content,
-        'team_members': team_members,
+        'page_content': page_content,
     }
     return render(request, 'restaurant/about.html', context)
