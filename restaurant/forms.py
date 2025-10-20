@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from .models import User, Reservation, BookingPreferences, Table, Event
+from .models import User, Reservation, BookingPreferences, Table, Event, ContactMessage
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -323,3 +323,51 @@ class EventForm(forms.ModelForm):
         if date and date < timezone.now().date():
             raise ValidationError('Дата не может быть в прошлом.')
         return date
+
+
+class ContactForm(forms.ModelForm):
+    """Форма обратной связи"""
+    name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Ваше имя'
+        }),
+        label='Имя'
+    )
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Ваш email'
+        }),
+        label='Email'
+    )
+    phone = forms.CharField(
+        max_length=20,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Телефон (опционально)'
+        }),
+        label='Телефон'
+    )
+    subject = forms.CharField(
+        max_length=200,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Тема сообщения'
+        }),
+        label='Тема'
+    )
+    message = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 5,
+            'placeholder': 'Ваше сообщение...'
+        }),
+        label='Сообщение'
+    )
+    
+    class Meta:
+        model = ContactMessage
+        fields = ['name', 'email', 'phone', 'subject', 'message']

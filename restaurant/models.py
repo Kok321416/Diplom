@@ -186,6 +186,60 @@ class KaraokeQueue(models.Model):
         return f"{self.song.artist} - {self.song.title}"
 
 
+class PageContent(models.Model):
+    """Модель для управления контентом страниц"""
+    PAGE_CHOICES = [
+        ('home', 'Главная страница'),
+        ('about', 'О ресторане'),
+    ]
+    
+    page = models.CharField(max_length=20, choices=PAGE_CHOICES, unique=True, verbose_name="Страница")
+    title = models.CharField(max_length=200, verbose_name="Заголовок")
+    subtitle = models.TextField(blank=True, verbose_name="Подзаголовок")
+    description = models.TextField(verbose_name="Описание")
+    services = models.TextField(blank=True, verbose_name="Услуги")
+    contacts = models.TextField(blank=True, verbose_name="Контакты")
+    history = models.TextField(blank=True, verbose_name="История")
+    mission = models.TextField(blank=True, verbose_name="Миссия и ценности")
+    team = models.TextField(blank=True, verbose_name="Команда")
+    is_active = models.BooleanField(default=True, verbose_name="Активно")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Создано")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Обновлено")
+    
+    class Meta:
+        verbose_name = "Контент страницы"
+        verbose_name_plural = "Контент страниц"
+        ordering = ['page']
+    
+    def __str__(self):
+        return f"{self.get_page_display()} - {self.title}"
+
+
+class ContactMessage(models.Model):
+    """Модель для сообщений обратной связи"""
+    STATUS_CHOICES = [
+        ('new', 'Новое'),
+        ('read', 'Прочитано'),
+        ('replied', 'Отвечено'),
+    ]
+    
+    name = models.CharField(max_length=100, verbose_name="Имя")
+    email = models.EmailField(verbose_name="Email")
+    phone = models.CharField(max_length=20, blank=True, verbose_name="Телефон")
+    subject = models.CharField(max_length=200, verbose_name="Тема")
+    message = models.TextField(verbose_name="Сообщение")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new', verbose_name="Статус")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Создано")
+    
+    class Meta:
+        verbose_name = "Сообщение обратной связи"
+        verbose_name_plural = "Сообщения обратной связи"
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.name} - {self.subject} ({self.get_status_display()})"
+
+
 class Event(models.Model):
     """Модель мероприятия"""
     STATUS_CHOICES = [
@@ -223,3 +277,50 @@ class Event(models.Model):
     
     def __str__(self):
         return f"Мероприятие от {self.user.username} на {self.date} ({self.participants_count} чел.)"
+
+
+class SiteContent(models.Model):
+    """Модель для управления контентом сайта через админку"""
+    CONTENT_TYPE_CHOICES = [
+        ('hero', 'Главный баннер'),
+        ('about', 'О ресторане'),
+        ('services', 'Услуги'),
+        ('contact', 'Контакты'),
+    ]
+    
+    content_type = models.CharField(max_length=20, choices=CONTENT_TYPE_CHOICES, unique=True, verbose_name="Тип контента")
+    title = models.CharField(max_length=200, verbose_name="Заголовок")
+    subtitle = models.CharField(max_length=300, blank=True, verbose_name="Подзаголовок")
+    description = models.TextField(verbose_name="Описание")
+    image = models.ImageField(upload_to='content/', blank=True, null=True, verbose_name="Изображение")
+    is_active = models.BooleanField(default=True, verbose_name="Активно")
+    
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Создано")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Обновлено")
+    
+    class Meta:
+        verbose_name = "Контент сайта"
+        verbose_name_plural = "Контент сайта"
+    
+    def __str__(self):
+        return f"{self.get_content_type_display()}: {self.title}"
+
+
+class TeamMember(models.Model):
+    """Модель для членов команды ресторана"""
+    name = models.CharField(max_length=100, verbose_name="Имя")
+    position = models.CharField(max_length=100, verbose_name="Должность")
+    bio = models.TextField(verbose_name="Биография")
+    photo = models.ImageField(upload_to='team/', blank=True, null=True, verbose_name="Фото")
+    order = models.IntegerField(default=0, verbose_name="Порядок отображения")
+    is_active = models.BooleanField(default=True, verbose_name="Активен")
+    
+    class Meta:
+        verbose_name = "Член команды"
+        verbose_name_plural = "Команда"
+        ordering = ['order', 'name']
+    
+    def __str__(self):
+        return f"{self.name} - {self.position}"
+
+

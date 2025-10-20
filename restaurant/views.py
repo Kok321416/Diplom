@@ -7,13 +7,40 @@ from django.views.decorators.http import require_http_methods
 from django.utils import timezone
 from django.db import transaction
 from datetime import timedelta
-from .models import User, Table, Seat, Reservation, BookingPreferences, Song, KaraokeQueue, Event
-from .forms import CustomUserCreationForm, BookingPreferencesForm, ReservationForm, DirectReservationForm, EventForm
+from .models import User, Table, Seat, Reservation, BookingPreferences, Song, KaraokeQueue, Event, PageContent, ContactMessage
+from .forms import CustomUserCreationForm, BookingPreferencesForm, ReservationForm, DirectReservationForm, EventForm, ContactForm
 
 
 def home(request):
     """Главная страница"""
-    return render(request, 'restaurant/home.html')
+    # Получаем контент из админки
+    page_content = PageContent.objects.filter(page='home', is_active=True).first()
+    
+    # Форма обратной связи
+    if request.method == 'POST':
+        contact_form = ContactForm(request.POST)
+        if contact_form.is_valid():
+            contact_form.save()
+            messages.success(request, 'Спасибо за ваше сообщение! Мы свяжемся с вами в ближайшее время.')
+            return redirect('home')
+    else:
+        contact_form = ContactForm()
+    
+    context = {
+        'page_content': page_content,
+        'contact_form': contact_form,
+    }
+    return render(request, 'restaurant/home.html', context)
+
+
+def about(request):
+    """Страница 'О ресторане'"""
+    page_content = PageContent.objects.filter(page='about', is_active=True).first()
+    
+    context = {
+        'page_content': page_content,
+    }
+    return render(request, 'restaurant/about.html', context)
 
 
 def booking_choice(request):
@@ -306,7 +333,7 @@ def reservation_confirmation(request, reservation_id):
                 seat.is_available = False
                 seat.save()
         
-        messages.success(request, 'Бронирование подтверждено и оплачено!')
+        messages.success(request, 'Бронирование подтверждено!')
         return redirect('reservation_success', reservation_id=reservation.id)
     
     return render(request, 'restaurant/reservation_confirmation.html', {
@@ -548,3 +575,13 @@ def my_events(request):
     """Мои мероприятия"""
     events = Event.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'restaurant/my_events.html', {'events': events})
+
+
+def about(request):
+    """Страница О ресторане"""
+    page_content = PageContent.objects.filter(page='about', is_active=True).first()
+    
+    context = {
+        'page_content': page_content,
+    }
+    return render(request, 'restaurant/about.html', context)

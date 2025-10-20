@@ -4,32 +4,42 @@
 {% block title %}Параметры бронирования - SkyBAR{% endblock %}
 
 {% block content %}
+<!-- Hero Section -->
+<section class="hero-section-booking position-relative text-white py-5">
+    <div class="hero-background" style="
+        background: linear-gradient(135deg, rgba(13, 110, 253, 0.9) 0%, rgba(111, 66, 193, 0.9) 50%, rgba(220, 53, 69, 0.9) 100%),
+                    url('https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=1920&q=80') center/cover;
+        min-height: 50vh;
+        display: flex;
+        align-items: center;
+    ">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <div class="icon-wrapper-large mb-4">
+                        <i class="fas fa-cog fa-3x text-warning" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.3);"></i>
+                    </div>
+                    <h1 class="display-4 fw-bold mb-3" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.3);">
+                        <span class="text-warning">Параметры</span> <span class="text-white">бронирования</span>
+                    </h1>
+                    <p class="lead fs-3" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.3);">
+                        Выберите предпочтения для вашего визита в SkyBAR
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <!-- Header -->
-            <div class="text-center mb-5 header-animated">
-                <div class="icon-wrapper-large mb-4">
-                    <i class="fas fa-cog"></i>
-                </div>
-                <h1 class="display-4 fw-bold gradient-title mb-3 animate-fade-in">
-                    Параметры бронирования
-                </h1>
-                <p class="lead subtitle-animated animate-fade-in" style="animation-delay: 0.2s;">
-                    Выберите предпочтения для вашего визита в SkyBAR
-                </p>
-                <div class="decorative-dots">
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                </div>
-            </div>
 
             <!-- Booking Preferences Form -->
-            <div class="card shadow-lg main-form-card animate-fade-in" style="animation-delay: 0.4s;">
-                <div class="card-header gradient-header-pref text-white">
-                    <h5 class="card-title mb-0 header-pref-title">
-                        <i class="fas fa-user-cog me-2 icon-spin-slow"></i>
+            <div class="card shadow-lg main-form-card" style="border: 2px solid #e9ecef; border-radius: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                <div class="card-header" style="background: linear-gradient(135deg, #0d6efd 0%, #6f42c1 50%, #dc3545 100%); color: white; border-radius: 13px 13px 0 0;">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-user-cog me-2"></i>
                         Настройки бронирования
                     </h5>
                 </div>
@@ -67,11 +77,11 @@
                                 <i class="fas fa-map-marker-alt me-2"></i>
                                 Зона
                             </label>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="card zone-card" data-zone="regular">
+                            <div class="row justify-content-center">
+                                <div class="col-md-5">
+                                    <div class="card zone-card" data-zone="regular" style="border: 2px solid #e9ecef; border-radius: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; cursor: pointer;">
                                         <div class="card-body text-center">
-                                            <i class="fas fa-chair text-primary mb-3" style="font-size: 2rem;"></i>
+                                            <i class="fas fa-chair mb-3" style="font-size: 2rem; color: #0d6efd;"></i>
                                             <h6 class="card-title">Обычная зона</h6>
                                             <p class="card-text text-muted small">
                                                 Стандартные столы в основном зале ресторана
@@ -79,10 +89,10 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="card zone-card" data-zone="vip">
+                                <div class="col-md-5">
+                                    <div class="card zone-card" data-zone="vip" style="border: 2px solid #e9ecef; border-radius: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; cursor: pointer;">
                                         <div class="card-body text-center">
-                                            <i class="fas fa-crown text-warning mb-3" style="font-size: 2rem;"></i>
+                                            <i class="fas fa-crown mb-3" style="font-size: 2rem; color: #6f42c1;"></i>
                                             <h6 class="card-title">VIP зона</h6>
                                             <p class="card-text text-muted small">
                                                 Премиальные столы с улучшенным сервисом
@@ -97,12 +107,12 @@
 
                         <!-- Birthday Section -->
                         <div class="mb-4">
-                            <div class="card border-warning">
+                            <div class="card" style="border: 2px solid #ffc107; border-radius: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
                                 <div class="card-body">
                                     <div class="form-check mb-3">
                                         <input class="form-check-input" type="checkbox" id="is_birthday" name="is_birthday">
                                         <label class="form-check-label fw-bold" for="is_birthday">
-                                            <i class="fas fa-birthday-cake text-warning me-2"></i>
+                                            <i class="fas fa-birthday-cake me-2" style="color: #ffc107;"></i>
                                             Будет отмечаться день рождения
                                         </label>
                                     </div>
@@ -124,11 +134,11 @@
 
                         <!-- Action Buttons -->
                         <div class="d-grid gap-2 d-md-flex justify-content-md-between">
-                            <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-lg">
+                            <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-lg" style="border: 2px solid #6c757d; color: #6c757d; border-radius: 8px; font-weight: bold; transition: all 0.3s ease;">
                                 <i class="fas fa-arrow-left me-2"></i>
                                 На главную
                             </a>
-                            <button type="submit" class="btn btn-primary btn-lg" id="continue-btn" disabled>
+                            <button type="submit" class="btn btn-primary btn-lg" id="continue-btn" disabled style="background: linear-gradient(135deg, #0d6efd 0%, #6f42c1 50%, #dc3545 100%); border: none; border-radius: 8px; font-weight: bold; transition: all 0.3s ease; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
                                 <i class="fas fa-arrow-right me-2"></i>
                                 Продолжить
                             </button>
@@ -140,9 +150,9 @@
             <!-- Info Cards -->
             <div class="row mt-5">
                 <div class="col-md-4">
-                    <div class="card h-100 border-0 shadow-sm">
+                    <div class="card h-100" style="border: 2px solid #e9ecef; border-radius: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
                         <div class="card-body text-center">
-                            <i class="fas fa-clock text-primary mb-3" style="font-size: 2rem;"></i>
+                            <i class="fas fa-clock mb-3" style="font-size: 2rem; color: #0d6efd;"></i>
                             <h6 class="fw-bold">Гибкое время</h6>
                             <p class="text-muted small">
                                 Выберите удобное время для посещения
@@ -151,9 +161,9 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card h-100 border-0 shadow-sm">
+                    <div class="card h-100" style="border: 2px solid #e9ecef; border-radius: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
                         <div class="card-body text-center">
-                            <i class="fas fa-map text-success mb-3" style="font-size: 2rem;"></i>
+                            <i class="fas fa-map mb-3" style="font-size: 2rem; color: #6f42c1;"></i>
                             <h6 class="fw-bold">Выбор места</h6>
                             <p class="text-muted small">
                                 Интерактивная карта для выбора стола
@@ -162,9 +172,9 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card h-100 border-0 shadow-sm">
+                    <div class="card h-100" style="border: 2px solid #e9ecef; border-radius: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
                         <div class="card-body text-center">
-                            <i class="fas fa-credit-card text-warning mb-3" style="font-size: 2rem;"></i>
+                            <i class="fas fa-credit-card mb-3" style="font-size: 2rem; color: #dc3545;"></i>
                             <h6 class="fw-bold">Простая оплата</h6>
                             <p class="text-muted small">
                                 Оплата на месте в ресторане
